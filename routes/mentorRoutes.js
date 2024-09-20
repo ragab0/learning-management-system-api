@@ -1,6 +1,6 @@
 const ets = require("express");
 const authControllers = require("../controllers/authControllers");
-const userControllers = require("../controllers/userControllers");
+const mentorControllers = require("../controllers/mentorControllers");
 const router = ets.Router();
 
 router
@@ -8,7 +8,7 @@ router
   .get(
     authControllers.protect,
     authControllers.assignableTo("admin"),
-    userControllers.getAllUsers
+    mentorControllers.getAllMentors
   );
 
 module.exports = router;
