@@ -2,7 +2,14 @@ const ets = require("express");
 const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
 const Student = require("../models/users/studentModel");
 
-// 01 signup;
+/**
+ *  AUTHintication controllers:
+ *  == the signup controller - before auth;
+ *  == the login controller - AUTH STEP 01 / 02;
+ *  == the protectedRoutes controller - AUTH STEP 02 / 02;
+ *
+ */
+
 const signup = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
@@ -13,7 +20,6 @@ const signup = catchAsyncMiddle(async function (
   next();
 });
 
-// 02 login;
 const login = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
@@ -23,7 +29,12 @@ const login = catchAsyncMiddle(async function (
   next();
 });
 
-// 03 logout;
+/**
+ *  Authorization controllers
+ *  == the assignableTo - which is responsible for assigning specific types of users to specific actions;
+ *     && it came after the protectedRoutes controller && before berforming the action itself (middle/method of action);
+ */
+
 const protect = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
@@ -37,6 +48,11 @@ const assignableTo = function (...rules) {
     next
   ) {});
 };
+
+/**
+ * Logout - in case u didn't see me, good bey, good evening, good morning xDDDDD;
+ *
+ */
 
 const logout = catchAsyncMiddle(async function (
   req = ets.request,

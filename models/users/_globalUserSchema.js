@@ -1,4 +1,7 @@
-// global parent, inherited from others;
+/**
+ * global && un-modeled schema that is get inherited from [studentSchema, mentorSchema, adminSchema];
+ *
+ */
 
 const mongoose = require("mongoose");
 const bycrypt = require("bcryptjs");
@@ -56,12 +59,13 @@ const userSchema = new mongoose.Schema({
 });
 
 /**
- * instances mehtods;
+ * instances mehtods that will be availbe/added into the all created docs prototype;
+ *
  */
 
 // 01 checking password;
 userSchema.methods.checkPassword = async function (candiatePass, userPass) {
-  // those params since the password not selected;
+  // those params since the password not selected as we difined it in the schema;
   return await bcrypt.compare(candiatePass, userPass);
 };
 

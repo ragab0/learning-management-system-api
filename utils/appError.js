@@ -1,3 +1,7 @@
+/**
+ * global error schema/stamba that all our created errors will foloow - will be look like;
+ *
+ */
 module.exports = class AppError extends Error {
   constructor(message, statusCode) {
     super(message);

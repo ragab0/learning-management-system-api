@@ -2,12 +2,20 @@ const mongoose = require("mongoose");
 const app = require("./app");
 const dotenv = require("dotenv");
 
-// 01 configuring the env vars:
+/**
+ * 01 configuring && destructring the env vars:
+ *
+ */
+
 dotenv.config({ path: "./.env" });
 const { NODE_ENV, DATABASE_LOCAL, DATABASE_REMOTE, DATABASE_PASSWORD } =
   process.env;
 
-// 02 configuring && connecting with the db;
+/**
+ * 02 configuring && connecting with the db in both (local && remote);
+ *
+ */
+
 let db, options;
 if (NODE_ENV === "development") {
   db = DATABASE_LOCAL;
@@ -31,6 +39,9 @@ if (NODE_ENV === "development") {
   }
 })();
 
-// XX configuring the app:
+/**
+ * XX configuring && running our app:
+ *
+ */
 const port = 3500;
 app.listen(port, "localhost");
