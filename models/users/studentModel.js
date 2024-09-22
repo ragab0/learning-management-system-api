@@ -11,19 +11,16 @@ const studentSchema = new mongoose.Schema({
   ...userSchema.obj,
   enrolledCourses: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
-    },
-  ],
-  progress: [
-    {
       courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
-      completedModules: [mongoose.Schema.Types.ObjectId],
-      completedLessons: [mongoose.Schema.Types.ObjectId],
+      enrollmentDate: { type: Date, default: Date.now() },
+      overallProgress: { type: Number, default: 0 }, // computed in fact - but persited is better;
+      status: {
+        type: String,
+        enum: ["Not Started", "In Progress", "Completed"],
+        default: "Not Started",
+      },
     },
   ],
-  activeChatRooms: [{ type: mongoose.Schema.Types.ObjectId, ref: "ChatRoom" }],
-
   // reviews: [
   //   {
   //     courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },

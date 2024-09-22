@@ -43,8 +43,8 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: {
-      values: ["student", "mentor", "admin"],
-      message: "Role is either: student, mentor, admin",
+      values: ["student", "mentor"],
+      message: "Role is either: student, mentor",
     },
     default: "student",
   },
@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema({
   links: Array(String),
   createdAt: {
     type: Date,
-    default: new Date(),
+    default: Date.now(),
   },
 });
 

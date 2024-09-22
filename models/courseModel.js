@@ -2,27 +2,29 @@ const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema({
   mentor: { type: mongoose.Schema.Types.ObjectId, ref: "Mentor" },
-  enrolledStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Student" }],
   modules: [
     {
       title: String,
       description: String,
-      order: Number,
+      // order: Number,
       lessons: [
         {
           title: String,
           content: String,
-          order: Number,
+          // order: Number,
+          comments: [
+            {
+              user: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
+              content: {
+                type: String,
+                required: [true, "A comment can't be empty!"],
+              },
+              createdAt: Date,
+              updatedAt: Date,
+            },
+          ],
         },
       ],
-    },
-  ],
-  reviews: [
-    {
-      student: { type: ObjectId, ref: "Student" },
-      rating: Number,
-      comment: String,
-      createdAt: Date,
     },
   ],
 

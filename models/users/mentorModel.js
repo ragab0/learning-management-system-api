@@ -9,14 +9,13 @@ const userSchema = require("./_globalUserSchema");
 const mentorSchema = new mongoose.Schema({
   // 01
   ...userSchema.obj,
-  coursesTeaching: [
+  taughtCourses: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course",
     },
   ],
-  activeChatRooms: [{ type: mongoose.Schema.Types.ObjectId, ref: "ChatRoom" }],
-  expertise: [{ type: String }],
+  expertise: [String],
   rating: { type: Number, min: 0, max: 5 },
 });
 // 02;
