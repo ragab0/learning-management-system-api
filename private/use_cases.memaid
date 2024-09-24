@@ -1,0 +1,60 @@
+graph TD
+    User((User))
+    Admin((Admin))
+    Student((Student))
+    Mentor((Mentor))
+
+    User --> Login[Login]
+    User --> Register[Register]
+    User --> ViewProfile[View Profile]
+    User --> UpdateProfile[Update Profile]
+    User --> BrowseCourses[Browse Courses]
+    User --> SearchCourses[Search Courses]
+
+    Admin --> ManageUsers[Manage Users]
+    Admin --> ManageCourses[Manage Courses]
+    Admin --> GenerateReports[Generate Reports]
+    Admin --> ConfigureSystem[Configure System]
+
+    Student --> AddToFavorites[Add Course to Favorites]
+    Student --> RemoveFromFavorites[Remove Course from Favorites]
+    Student --> AddToCart[Add Course to Cart]
+    Student --> RemoveFromCart[Remove Course from Cart]
+    Student --> BookCourse[Book Course]
+    Student --> EnrollInCourse[Enroll in Course]
+    Student --> ArchiveCourse[Archive Course]
+    Student --> CreateReview[Create Review]
+    Student --> EditReview[Edit Review]
+    Student --> DeleteReview[Delete Review]
+    Student --> ViewProgress[View Course Progress]
+    Student --> SubmitAssignment[Submit Assignment]
+    Student --> TakeQuiz[Take Quiz]
+    Student --> ViewGrades[View Grades]
+    Student --> InitiateChat[Initiate Chat]
+    Student --> SendMessage[Send Message]
+    Student --> ViewCertificates[View Certificates]
+
+    Mentor --> CreateCourse[Create Course]
+    Mentor --> UpdateCourse[Update Course]
+    Mentor --> DeleteCourse[Delete Course]
+    Mentor --> ViewReviews[View Course Reviews]
+    Mentor --> RespondToReviews[Respond to Reviews]
+    Mentor --> ViewEnrollments[View Course Enrollments]
+    Mentor --> GradeAssignments[Grade Assignments]
+    Mentor --> CreateQuiz[Create Quiz]
+    Mentor --> SendMessage[Send Message]
+    Mentor --> ScheduleLiveSession[Schedule Live Session]
+    Mentor --> ViewAnalytics[View Course Analytics]
+
+    User -.- Admin
+    User -.- Student
+    User -.- Mentor
+
+    Student --> ViewReviews
+    Mentor --> InitiateChat
+
+    subgraph Shared Functionalities
+        ViewReviews
+        InitiateChat
+        SendMessage
+    end

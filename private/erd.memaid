@@ -1,0 +1,104 @@
+---
+config:
+  theme: forest
+---
+erDiagram
+    USER {
+        String fname
+        String lname
+        String email
+        String password
+        String passwordConfirm
+        String role
+        String photo
+        String headline
+        String language
+        Array links
+        Date createdAt
+    }
+    USER ||--o{STUDENT: is_a
+    USER ||--o{ADMIN: is_a
+    USER ||--o{MENTOR: is_a
+    COURSE ||--o{ REVIEW : receives
+    COURSE ||--o{ CHATROOM : has
+    COURSE ||--o{ MODULE : contains
+    MODULE ||--o{ LESSON : contains
+    LESSON ||--o{ COMMENT : has
+    STUDENT ||--o{ REVIEW : writes
+    STUDENT ||--o{ CHATROOM : participates
+    STUDENT ||--o{ BOOKING : makes
+    MENTOR ||--o{ COURSE : teaches
+    MENTOR ||--o{ NOTIFICATION : sends
+    STUDENT }o--o{ COURSE : enrolls
+    NOTIFICATION ||--o{ STUDENT : notifies
+    ADMIN {
+        Array permissions
+    }
+    MENTOR {
+        Array taughtCourses
+        Array expertise
+        Number rating
+    }
+    STUDENT {
+        Array inFavouriteCourses
+        Array inCartCourses
+        Array enrolledCourses
+    }
+    COURSE {
+        ObjectId mentor
+        String title
+        String description
+        Array tags
+        String photo
+        Number price
+        Number duration
+        Date createdAt
+        Date updatedAt
+    }
+    MODULE {
+        String title
+        String description
+        Array lessons
+    }
+    LESSON {
+        String title
+        String content
+        Array comments
+    }
+    COMMENT {
+        ObjectId user
+        String content
+        Date createdAt
+        Date updatedAt
+    }
+    REVIEW {
+        ObjectId student
+        ObjectId course
+        Number rating
+        String content
+        Date createdAt
+    }
+    CHATROOM {
+        ObjectId student
+        ObjectId course
+        String status
+        Array messages
+        Date createdAt
+        Date updatedAt
+    }
+    BOOKING {
+        ObjectId studentId
+        ObjectId courseId
+        String status
+        Number price
+        Number discount
+        Date createdAt
+    }
+    NOTIFICATION {
+        ObjectId sender
+        Array recievers
+        String type
+        String content
+        Date createdAt
+    }
+

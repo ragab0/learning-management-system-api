@@ -9,6 +9,16 @@ const userSchema = require("./_globalUserSchema");
 const studentSchema = new mongoose.Schema({
   // 01
   ...userSchema.obj,
+  inFavouriteCourses: [
+    {
+      courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
+    },
+  ],
+  inCartCourses: [
+    {
+      courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
+    },
+  ],
   enrolledCourses: [
     {
       courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
@@ -19,16 +29,17 @@ const studentSchema = new mongoose.Schema({
         enum: ["Not Started", "In Progress", "Completed"],
         default: "Not Started",
       },
+      progress: {
+        completedModules: [
+          { type: mongoose.Schema.Types.ObjectId, ref: "Course.module" },
+        ],
+        completedLessons: [
+          { type: mongoose.Schema.Types.ObjectId, ref: "Course.module.lesson" },
+        ],
+        lastUpdated: { type: Date, default: Date.now() },
+      },
     },
   ],
-  // reviews: [
-  //   {
-  //     courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
-  //     rating: { type: Number, min: 1, max: 5 },
-  //     timestamp: { type: Date, default: Date.now },
-  //     reviewText: String,
-  //   },
-  // ],
 });
 // 02;
 studentSchema.methods = userSchema.methods;
