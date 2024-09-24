@@ -1,0 +1,135 @@
+openapi: 3.0.0
+info:
+  title: Learning Management System API
+  version: 1.0.0
+  description: API for a learning managment platform with courses, mentors, students, and admins;
+
+servers:
+  - url: NOT_YET
+
+paths:
+  /login:
+    post:
+      summary: User login
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+
+  /register:
+    post:
+      summary: User registration
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [student, mentor]
+      responses:
+        "201":
+          description: User created
+
+  /courses:
+    get:
+      summary: Get all courses
+      tags:
+        - Courses
+      responses:
+        "200":
+          description: List of courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
+
+  /mentor/courses:
+    post:
+      summary: Create a new course
+      tags:
+        - Mentor
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseInput"
+      responses:
+        "201":
+          description: Course created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+
+  /student/enroll:
+    post:
+      summary: Enroll in a course
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                courseId:
+                  type: string
+      responses:
+        "200":
+          description: Success
+  /admin/mentors:
+    get:
+      summary: get students
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Success
+  /admin/students:
+    get:
+      summary: get students
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Success

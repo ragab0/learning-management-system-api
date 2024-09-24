@@ -44,4 +44,6 @@ if (NODE_ENV === "development") {
  *
  */
 const port = 3500;
-app.listen(port, "localhost");
+app.listen(port, "localhost", function () {
+  console.log("Server is running on", port);
+});
