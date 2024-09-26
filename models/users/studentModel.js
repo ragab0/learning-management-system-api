@@ -23,21 +23,6 @@ const studentSchema = new mongoose.Schema({
     {
       courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
       enrollmentDate: { type: Date, default: Date.now() },
-      overallProgress: { type: Number, default: 0 }, // computed in fact - but persited is better;
-      status: {
-        type: String,
-        enum: ["Not Started", "In Progress", "Completed"],
-        default: "Not Started",
-      },
-      progress: {
-        completedModules: [
-          { type: mongoose.Schema.Types.ObjectId, ref: "Course.module" },
-        ],
-        completedLessons: [
-          { type: mongoose.Schema.Types.ObjectId, ref: "Course.module.lesson" },
-        ],
-        lastUpdated: { type: Date, default: Date.now() },
-      },
     },
   ],
 });

@@ -2,33 +2,7 @@ const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema(
   {
-    mentor: { type: mongoose.Schema.Types.ObjectId, ref: "Mentor" },
-    modules: [
-      {
-        title: String,
-        description: String,
-        // order: Number,
-        lessons: [
-          {
-            title: String,
-            content: String,
-            // order: Number,
-            comments: [
-              {
-                user: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
-                content: {
-                  type: String,
-                  required: [true, "A comment can't be empty!"],
-                },
-                createdAt: Date,
-                updatedAt: Date,
-              },
-            ],
-          },
-        ],
-      },
-    ],
-
+    mentorId: { type: mongoose.Schema.Types.ObjectId, ref: "Mentor" },
     title: {
       type: String,
       default: "a tutorial course!",
@@ -37,6 +11,18 @@ const courseSchema = new mongoose.Schema(
       type: String,
       default: "a tutorial course description!",
     },
+    modules: [
+      {
+        title: String,
+        description: String,
+        lessons: [
+          {
+            title: String,
+            content: String,
+          },
+        ],
+      },
+    ],
     tags: Array(String),
     photo: String,
     price: Number,

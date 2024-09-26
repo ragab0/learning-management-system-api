@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const reviewSchema = mongoose.Schema({
-  student: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
-  course: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
+  studentId: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
+  courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
   rating: {
     type: Number,
     min: 1,

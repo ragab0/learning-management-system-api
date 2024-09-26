@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const chatRoomSchema = {
-  student: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
-  course: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
+  studentId: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
+  courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
   // mentor: { type: mongoose.Schema.Types.ObjectId, ref: "Mentor" },
   status: {
     type: String,
