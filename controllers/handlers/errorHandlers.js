@@ -1,4 +1,4 @@
-const AppError = require("../utils/appError");
+const AppError = require("../../utils/appError");
 module.exports = function mainErrorController(err, req, res, next) {
   /**
    * if not operational - not handled:

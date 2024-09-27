@@ -1,15 +1,8 @@
 graph TD
-    User((User))
     Admin((Admin))
     Student((Student))
     Mentor((Mentor))
 
-    User --> Login[Login]
-    User --> Register[Register]
-    User --> ViewProfile[View Profile]
-    User --> UpdateProfile[Update Profile]
-    User --> BrowseCourses[Browse Courses]
-    User --> SearchCourses[Search Courses]
 
     Admin --> ManageUsers[Manage Users]
     Admin --> ManageCourses[Manage Courses]
@@ -46,9 +39,6 @@ graph TD
     Mentor --> ScheduleLiveSession[Schedule Live Session]
     Mentor --> ViewAnalytics[View Course Analytics]
 
-    User -.- Admin
-    User -.- Student
-    User -.- Mentor
 
     Student --> ViewReviews
     Mentor --> InitiateChat

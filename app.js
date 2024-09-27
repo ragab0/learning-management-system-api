@@ -4,10 +4,7 @@ const express = require("express");
 const swaggerUi = require("swagger-ui-express");
 const path = require("path");
 const mainErrorController = require("./controllers/errorControllers");
-const authRoutes = require("./routes/authRoutes");
-const adminRoutes = require("./routes/adminRoutes");
-const mentorRoutes = require("./routes/mentorRoutes");
-const studentRoutes = require("./routes/studentRoutes");
+const mainRoutes = require("./routes");
 
 /** configuring the app */
 
@@ -26,12 +23,8 @@ app.use(function (req, _, next) {
 });
 
 // 03 mounting routes middles:
+app.use(mainRoutes);
 app.use("/api/v1/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use("/api/v1/", authRoutes);
-app.use("/api/v1/courses", coursesRoutes);
-app.use("/api/v1/adimn", adminRoutes);
-app.use("/api/v1/mentors", mentorRoutes);
-app.use("/api/v1/students", studentRoutes);
 
 // XX main global catcher for handling/CATCHING the un-handled/un-mounted routes:
 app.all("*", function (req, res, next) {
