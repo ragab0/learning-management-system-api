@@ -2,6 +2,15 @@ const ets = require("express");
 const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
 
 /**
+ * Profile [basic info, courses, teachers, messages, chats, reviews];
+ */
+const getAssignedTeachers = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response,
+  next
+) {});
+
+/**
  * Courses && cart && wishlist:
  * 01) StudentEnrolledCoursesControllers:
  * 02) StudentCartCoursesControllers:
@@ -67,6 +76,8 @@ const removeCourseFromWishlist = catchAsyncMiddle(async function (
 ) {});
 
 module.exports = {
+  getAssignedTeachers,
+
   getEnrolledCourses,
   enrollNewCourse,
   archiveEnrolledCourse,

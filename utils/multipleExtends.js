@@ -1,11 +1,12 @@
 class BaseClass {}
 class MixinBuilder {
-  constructor(superclass) {
-    this.superclass = superclass;
+  constructor() {
+    this.superclass = BaseClass;
   }
   with(...mixins) {
     return mixins.reduce((c, mixin) => mixin(c), this.superclass);
   }
 }
+
 // this will combine everything in one class
-const mix = (superclass) => new MixinBuilder(superclass);
+const mix = () => new MixinBuilder();

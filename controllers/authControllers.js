@@ -29,8 +29,11 @@ function signToken(user = {}) {
 // AUTH 00 / 02;
 const signup = catchAsyncMiddle(async function (
   req = ets.request,
-  res = ets.response
+  res = ets.response,
+  next
 ) {
+  console.log("................", req.body);
+
   // 01) create a user based on the role either [mentor or student by default];
   let user;
   if (req.body.role === "mentor") {
@@ -58,6 +61,8 @@ const login = catchAsyncMiddle(async function (
   res = ets.response,
   next
 ) {
+  console.log("................", req.body);
+
   const { email, password, role } = req.body;
 
   // 01) check if email || password are provided;

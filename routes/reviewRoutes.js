@@ -13,19 +13,19 @@ router
   .get(reviewController.getAllReviewsOf)
   .post(
     authControllers.protect,
-    authControllers.restrictTo("student, admin"),
-    reviewController.createReview
+    authControllers.assignableTo("student, admin"),
+    reviewController.addReview
   );
 router
   .route("/:reviewId")
   .put(
     authControllers.protect,
-    authControllers.restrictTo("student, admin"),
+    authControllers.assignableTo("student, admin"),
     reviewController.updateReview
   )
   .delete(
     authControllers.protect,
-    authControllers.restrictTo("student, admin"),
+    authControllers.assignableTo("student, admin"),
     reviewController.deleteReview
   );
 

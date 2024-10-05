@@ -5,7 +5,7 @@ module.exports = function catchAsyncMiddle(middle) {
     try {
       middle(req, res, next);
     } catch (error) {
-      next(error);
+      // next(error);
     }
   };
 };

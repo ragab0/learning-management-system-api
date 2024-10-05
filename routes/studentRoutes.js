@@ -38,45 +38,45 @@ router.use("/reviews", reviewRoutes);
 router
   .route("/courses")
   .get(
-    authControllers.restrictTo("student", "admin"),
+    authControllers.assignableTo("student", "admin"),
     studentControllers.getEnrolledCourses
   )
   .post(
-    authControllers.restrictTo("student", "admin"),
+    authControllers.assignableTo("student", "admin"),
     studentControllers.enrollNewCourse
   )
   .delete(
-    authControllers.restrictTo("student", "admin"),
+    authControllers.assignableTo("student", "admin"),
     studentControllers.archiveEnrolledCourse
   );
 
 router
   .route("/courses/wishlist")
   .get(
-    authControllers.restrictTo("student", "admin"),
-    studentControllers.getFavouriteCourses
+    authControllers.assignableTo("student", "admin"),
+    studentControllers.getWishlistCourses
   )
   .post(
-    authControllers.restrictTo("student", "admin"),
-    studentControllers.addCourseToFavourite
+    authControllers.assignableTo("student", "admin"),
+    studentControllers.addCourseToWishlist
   )
   .delete(
-    authControllers.restrictTo("student", "admin"),
+    authControllers.assignableTo("student", "admin"),
     studentControllers.archiveEnrolledCourse
   );
 
 router
   .route("/courses/cartlist")
   .get(
-    authControllers.restrictTo("student", "admin"),
+    authControllers.assignableTo("student", "admin"),
     studentControllers.getCartCourses
   )
   .post(
-    authControllers.restrictTo("student", "admin"),
+    authControllers.assignableTo("student", "admin"),
     studentControllers.addCourseToCart
   )
   .delete(
-    authControllers.restrictTo("student", "admin"),
+    authControllers.assignableTo("student", "admin"),
     studentControllers.removeCourseFromCart
   );
 

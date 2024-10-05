@@ -1,10 +1,10 @@
 const ets = require("express");
 const authControllers = require("../controllers/authControllers");
-const router = ets.Router();
+const authRouter = ets.Router();
 
 /** special endpoints */
-router.route("/signup").post(authControllers.signup);
-router.route("/login").post(authControllers.login);
-router.route("/logout").post(authControllers.logout);
+authRouter.route("/signup").post(authControllers.signup);
+authRouter.route("/login").post(authControllers.login);
+authRouter.route("/logout").post(authControllers.logout);
 
-module.exports = router;
+module.exports = authRouter;
