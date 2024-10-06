@@ -1,3 +1,4 @@
+const AppError = require("./utils/appError");
 const { default: mongoose } = require("mongoose");
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
