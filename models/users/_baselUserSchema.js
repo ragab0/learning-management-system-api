@@ -43,11 +43,16 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
+      required: [true, "Please specify your role!"],
+      validate: {
+        validator: function (val) {
+          return ["student", "mentor"].includes(val);
+        },
+        message: "`{VALUE}` must be either (student | mentor)",
+      },
       enum: {
         values: ["student", "mentor"],
-        message: "Role is either: student, mentor",
       },
-      default: "student",
     },
     passwordChangedAt: Date,
     photo: String,
@@ -63,8 +68,8 @@ const userSchema = new mongoose.Schema(
       default: true,
       select: false,
     },
-  },
-  { discriminatorKey: "role" }
+  }
+  // ,{ discriminatorKey: "role" }
 );
 
 /**
