@@ -20,6 +20,9 @@ paths:
             schema:
               type: object
               properties:
+                role:
+                  type: string
+                  enum: [student, mentor, admin]
                 email:
                   type: string
                 password:
@@ -35,7 +38,7 @@ paths:
                   token:
                     type: string
 
-  /register:
+  /signup:
     post:
       summary: User registration
       tags:
@@ -47,16 +50,338 @@ paths:
             schema:
               type: object
               properties:
+                role:
+                  type: string
+                  enum: [student, mentor]
+                fname:
+                  type: string
+                lname:
+                  type: string
+                username:
+                  type: string
                 email:
                   type: string
                 password:
                   type: string
-                role:
+                passwordConfirm:
                   type: string
-                  enum: [student, mentor]
+
       responses:
         "201":
           description: User created
+
+  /student:
+    get:
+      summary: get all student info [profile, courses, chats, messages, mentors]
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+
+      responses:
+        "200":
+          description: Success
+  /student/profile:
+    get:
+      summary: get student profile
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+
+      responses:
+        "200":
+          description: Success
+    put:
+      summary: Update student profile
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseInput"
+      responses:
+        "200":
+          description: Updating done
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+
+  /student/chats:
+    get:
+      summary: get student chats
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+
+      responses:
+        "200":
+          description: Success
+
+  /student/messages:
+    get:
+      summary: get student messages
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+
+      responses:
+        "200":
+          description: Success
+
+  /student/courses:
+    get:
+      summary: get all student courses [enrolled, archived, cart, wishlist]
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+
+      responses:
+        "200":
+          description: Success
+  /student/courses/enrolled:
+    get:
+      summary: get student enrolled courses
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+
+      responses:
+        "200":
+          description: Success
+    post:
+      summary: Enroll into a new course
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseInput"
+      responses:
+        "201":
+          description: Enrolled done
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+
+  /student/courses/archived:
+    get:
+      summary: get student archived courses
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+
+      responses:
+        "200":
+          description: Success
+    post:
+      summary: Arvhive an enrolled course
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseInput"
+      responses:
+        "201":
+          description: Archiving done
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+  /student/courses/cart:
+    get:
+      summary: get student cart courses
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+
+      responses:
+        "200":
+          description: Success
+    post:
+      summary: Add a new course into the cart
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseInput"
+      responses:
+        "201":
+          description: Addition done
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+  /student/courses/wishlist:
+    get:
+      summary: get student wishlist courses
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+
+      responses:
+        "200":
+          description: Success
+    post:
+      summary: Add a course into the wishlist
+      tags:
+        - Student
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseInput"
+      responses:
+        "201":
+          description: Addition done
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+
+  /mentor:
+    get:
+      summary: get all mentor info [profile, courses, reviews, chats, coupouns]
+      tags:
+        - Mentor
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Success
+
+  /mentor/profile/:
+    get:
+      summary: get mentor profile
+      tags:
+        - Mentor
+      responses:
+        "200":
+          description: Success
+
+  /mentor/student-reviews/:
+    get:
+      summary: get mentor student reviews
+      tags:
+        - Mentor
+      responses:
+        "200":
+          description: Success
+
+  /mentor/chats/:
+    get:
+      summary: Get mentor chats
+      tags:
+        - Mentor
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Success
+
+  /mentor/courses/:
+    get:
+      summary: Get mentor courses
+      tags:
+        - Mentor
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Success
+    post:
+      summary: Add new course
+      tags:
+        - Mentor
+      security:
+        - BearerAuth: []
+      responses:
+        "201":
+          description: Addition done
+    put:
+      summary: Update course
+      tags:
+        - Mentor
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Update done
+    delete:
+      summary: Delete course
+      tags:
+        - Mentor
+      security:
+        - BearerAuth: []
+      responses:
+        "204":
+
+  /mentor/copouns/:
+    get:
+      summary: Get mentor copouns
+      tags:
+        - Mentor
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Success
+    post:
+      summary: Add mentor copouns
+      tags:
+        - Mentor
+      security:
+        - BearerAuth: []
+      responses:
+        "201":
+          description: Addition done
+    put:
+      summary: Update mentor copouns
+      tags:
+        - Mentor
+      security:
+        - BearerAuth: []
+      responses:
+        "201":
+          description: Update done
+    delete:
+      summary: Delete mentor copouns
+      tags:
+        - Mentor
+      security:
+        - BearerAuth: []
+      responses:
+        "204":
 
   /courses:
     get:
@@ -73,47 +398,76 @@ paths:
                 items:
                   $ref: "#/components/schemas/Course"
 
-  /mentor/courses:
-    post:
-      summary: Create a new course
+  /course:
+    get:
+      summary: Get all courses
       tags:
-        - Mentor
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CourseInput"
+        - Courses
       responses:
-        "201":
-          description: Course created
+        "200":
+          description: List of courses
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Course"
+                type: array
+                items:
+                  $ref: "#/components/schemas/Course"
 
-  /student/enroll:
-    post:
-      summary: Enroll in a course
+  /top:
+    get:
+      summary: Get all top stats [categouries, stats, courses, mentors, comments]
       tags:
-        - Student
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                courseId:
-                  type: string
+        - Top
       responses:
         "200":
           description: Success
-  /admin/mentors:
+
+  /top/stats:
+    get:
+      summary: Get top stats numbers
+      tags:
+        - Top
+      responses:
+        "200":
+          description: Success
+
+  /top/categouries:
+    get:
+      summary: Get top categouries
+      tags:
+        - Top
+      responses:
+        "200":
+          description: Success
+
+  /top/courses:
+    get:
+      summary: Get top courses
+      tags:
+        - Top
+      responses:
+        "200":
+          description: Success
+
+  /top/mentors:
+    get:
+      summary: Get top mentors
+      tags:
+        - Top
+      responses:
+        "200":
+          description: Success
+
+  /top/comments:
+    get:
+      summary: Get top comments
+      tags:
+        - Top
+      responses:
+        "200":
+          description: Success
+
+  /admin/students:
     get:
       summary: get students
       tags:
@@ -123,7 +477,8 @@ paths:
       responses:
         "200":
           description: Success
-  /admin/students:
+
+  /admin/mentors:
     get:
       summary: get students
       tags:

@@ -103,8 +103,7 @@ userSchema.methods.comparePassword = async function (candiatePass, userPass) {
 // 02 check if password changed after the JWT created;
 userSchema.methods.isPasswordChangedAfter = function (JWTTimestamp) {
   console.log(JWTTimestamp, this.passwordChangedAt);
-
-  return this.passwordLastChange && this.passwordLastChange < JWTTimestamp;
+  return this.passwordChangedAt && this.passwordChangedAt < JWTTimestamp;
 };
 
 const User = mongoose.model("User", userSchema);

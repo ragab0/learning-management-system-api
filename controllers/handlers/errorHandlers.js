@@ -17,6 +17,12 @@ module.exports = function mainErrorController(err, req, res, next) {
       err = handleMongodbValidationError(err);
     } else if (err.code === 11000) {
       err = handleMongodbDuplicateFieldsError(err);
+    } else if (["JsonWebTokenError", "TokenExpiredError"].includes(err.name)) {
+      err = handleJWTErrors(err);
+    } else if (false) {
+    } else if (false) {
+    } else if (false) {
+    } else if (false) {
     } else if (false) {
     } else if (false) {
     } else if (false) {
@@ -78,4 +84,12 @@ function handleMongodbDuplicateFieldsError(err) {
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
+}
+
+function handleJWTErrors(err) {
+  const operationalError = new AppError(
+    "For your security. Please log in again!",
+    401
+  );
+  return operationalError;
 }

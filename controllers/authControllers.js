@@ -9,6 +9,12 @@ const dotenv = require("dotenv");
 
 dotenv.config({ path: ".env" });
 const { JWT_SECRET, JWT_EXPIRES_IN, NODE_ENV } = process.env;
+const COOKIE_NAME = "jwt";
+const roleTypes = {
+  admin: Admin,
+  mentor: Mentor,
+  studnet: Student,
+};
 
 /**
  *  AUTHintication controllers:
@@ -29,7 +35,7 @@ function signToken(user = {}) {
 }
 
 function sendToken(res, statusCode, token) {
-  res.cookie("jwt", token, {
+  res.cookie(COOKIE_NAME, token, {
     expires: new Date(
       Date.now() + parseInt(JWT_EXPIRES_IN) * 24 * 60 * 60 * 1000
     ),
@@ -95,34 +101,40 @@ const protect = catchAsyncMiddle(async function (
   res = ets.response,
   next
 ) {
-  // 01) checking if the user is loged in - is authonticated - the token is provided;
+  console.log("protect middlware...", req.cookies[COOKIE_NAME]);
+
+  // 01) checking if the user is loged in - is authonticated - the token is provided with http req header;
   let token;
   if (req.headers.authorization?.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
+  } else if (req.headers.cookie) {
+    token = req.cookies[COOKIE_NAME];
   } else {
     return next(new AppError("Please login to get access!", 401));
   }
 
   // 02) verify the token otherwise.. JsonWebTokenError;
-  const decoded = await promisify(verify)(token, JWT_SECRET);
-  console.log(decoded);
+  const decoded = verify(token, JWT_SECRET);
 
-  // 03) checking if the user/payload/id still same - the user [not deleted, updated] from/into the db;
-  const freshUser =
-    (await Admin.findById(decoded.id)) || (await Mentor.findById(decoded.id));
-  if (!freshUser) {
-    return next(new AppError("Please login again!", 401));
+  // 03) checking if the user (_id) not CUSTOMLY changed (by admin or db designer) like [deleted, updated ];
+  const UserSchema = roleTypes[decoded.role] || Student;
+  const currentUser = await UserSchema.findById(decoded.id);
+  if (!currentUser) {
+    return next(new AppError("User doesn't longer exist!", 401));
   }
 
-  // 04) checking if the password has not been changed after the token iat;
-  if (freshUser.isPasswordChangedAfter(decoded.iat)) {
+  // 04) checking if the user (password) has not been changed after the token iat;
+  if (currentUser.isPasswordChangedAfter(decoded.iat)) {
     return next(
-      new AppError("Password has been changed! Please login again!", 401)
+      new AppError(
+        "Password recently has been changed. Please login again!",
+        401
+      )
     );
   }
 
   // 05) finally pass the current user to the next middle (authorization/checkingPermissions);
-  req.user = freshUser;
+  req.user = currentUser;
   next();
 });
 
