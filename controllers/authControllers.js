@@ -4,7 +4,7 @@ const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
 const AppError = require("../utils/appError");
 const Student = require("../models/users/studentModel");
 const Mentor = require("../models/users/mentorModel");
-const Admin = require("../models/users/adminSchema");
+const Admin = require("../models/users/adminModel");
 const dotenv = require("dotenv");
 
 dotenv.config({ path: ".env" });
@@ -34,7 +34,7 @@ function signToken(user = {}) {
   });
 }
 
-function sendToken(res, statusCode, token) {
+function sendToken(res, statusCode, token, user) {
   res.cookie(COOKIE_NAME, token, {
     expires: new Date(
       Date.now() + parseInt(JWT_EXPIRES_IN) * 24 * 60 * 60 * 1000
@@ -43,9 +43,18 @@ function sendToken(res, statusCode, token) {
     httpOnly: true,
   });
 
+  console.log(token);
+
   res.status(statusCode).json({
     status: "success",
-    token,
+    user,
+  });
+}
+
+function sendUser(res, statusCode, user) {
+  res.status(statusCode).json({
+    status: "success",
+    user,
   });
 }
 
@@ -59,7 +68,7 @@ const signup = catchAsyncMiddle(async function (req, res, next) {
 
   // 02) siggning him to a valid token && sending it back as our final res
   const token = signToken(user);
-  sendToken(res, 201, token);
+  sendToken(res, 201, token, user);
 });
 
 /* AUTH 01 / 02; */
@@ -92,7 +101,14 @@ const login = catchAsyncMiddle(async function (
 
   // 04) Finally, signing a valid JWT && send it back as a res;
   const token = signToken(user);
-  sendToken(res, 201, token);
+  sendToken(res, 201, token, user);
+});
+
+const isLogin = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response
+) {
+  sendUser(res, 200, req.user);
 });
 
 /* AUTH 02 / 02 */
@@ -105,6 +121,11 @@ const protect = catchAsyncMiddle(async function (
 
   // 01) checking if the user is loged in - is authonticated - the token is provided with http req header;
   let token;
+
+  console.log("####", req.headers.authorization);
+  console.log("########", req.headers.cookie);
+  console.log("############", req.cookies, req.cookies[COOKIE_NAME]);
+
   if (req.headers.authorization?.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
   } else if (req.headers.cookie) {
@@ -187,6 +208,7 @@ const forgotPassword = catchAsyncMiddle(async function (
 module.exports = {
   signup,
   login,
+  isLogin,
   protect,
   assignableTo,
   logout,

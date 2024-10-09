@@ -1,5 +1,7 @@
 const AppError = require("../../utils/appError");
 module.exports = function mainErrorController(err, req, res, next) {
+  console.error("EEEEEEEEEEEEEEe", err);
+
   /**
    * if not operational - not handled:
    *    these errors that occures from [mongodb, internal express errors, these UNKNOWN/uncontrolled errors !!];
@@ -42,14 +44,14 @@ module.exports = function mainErrorController(err, req, res, next) {
    */
   if (process.env.NODE_ENV === "development") {
     return res.status(err.statusCode).json({
-      message: err.errs || err.message,
+      [err.errs ? "results" : "result"]: err.errs || err.message,
       status: err.status,
       error: err,
       errorStack: err.stack,
     });
   } else {
     return res.status(err.statusCode).json({
-      message: err.errs || err.message,
+      [err.errs ? "results" : "result"]: err.errs || err.message,
       status: err.status,
     });
   }
@@ -82,7 +84,7 @@ function handleMongodbValidationError(err) {
 
 function handleMongodbDuplicateFieldsError(err) {
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
-  const message = `Duplicate field value: ${value}. Please use another value!`;
+  const message = `Served value: ${value}. Please use another value!`;
   return new AppError(message, 400);
 }
 

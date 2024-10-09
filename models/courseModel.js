@@ -1,34 +1,106 @@
 const mongoose = require("mongoose");
 
+const lessonSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: [true, "A lesson must have a title"],
+  },
+  srcVideo: String,
+  content: String,
+});
+
+const moduleSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: [true, "A module must have a title"],
+  },
+  lessons: {
+    type: [lessonSchema],
+    validate: {
+      validator: function (arr) {
+        return arr && arr.length > 0;
+      },
+      message: "A module must contain at least one lesson",
+    },
+  },
+});
+
 const courseSchema = new mongoose.Schema(
   {
-    mentorId: { type: mongoose.Schema.Types.ObjectId, ref: "Mentor" },
+    mentorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Mentor",
+      required: [true, "A course must be assigned to a mentor"],
+    },
     title: {
       type: String,
-      default: "a tutorial course!",
+      required: [true, "A course must have a title"],
+    },
+    titleHook: {
+      type: String,
+      required: [true, "A course must have a hook title"],
+    },
+    levels: {
+      type: [String],
+      validate: {
+        validator: function (arr) {
+          return arr.length > 0;
+        },
+        message: "A course must have at least one level",
+      },
+      enum: {
+        values: ["all", "beginner", "intermediate", "advanced"],
+        message: `{VALUE} doesn't match. Allowed values are [all, beginner, intermediate, advanced]`,
+      },
+    },
+    languages: {
+      type: [String],
+      validate: {
+        validator: function (arr) {
+          return arr.length > 0;
+        },
+        message: "A course must have at least one language",
+      },
+    },
+    tags: {
+      type: [String],
+      validate: {
+        validator: function (arr) {
+          return arr.length > 0;
+        },
+        message: "A course must have at least one tag",
+      },
+    },
+    requirements: {
+      type: [String],
+      validate: {
+        validator: function (arr) {
+          return arr.length > 0;
+        },
+        message: "A course must have at least one requirement",
+      },
     },
     description: {
       type: String,
-      default: "a tutorial course description!",
+      required: [true, "A course must have a description"],
     },
-    modules: [
-      {
-        title: String,
-        description: String,
-        lessons: [
-          {
-            title: String,
-            content: String,
-          },
-        ],
+    whatYoulLearn: [String],
+    modules: {
+      type: [moduleSchema],
+      validate: {
+        validator: function (arr) {
+          return arr && arr.length > 0;
+        },
+        message: "A course must contain at least one module",
       },
-    ],
-    tags: Array(String),
+    },
     photo: String,
-    price: Number,
-    duration: Number,
-    createdAt: Date,
-    updatedAt: Date,
+    price: { type: Number, defualt: 0 },
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
+    lastUpdatedAt: Date,
   },
   {
     toJSON: { virtuals: true },
@@ -36,7 +108,10 @@ const courseSchema = new mongoose.Schema(
 );
 
 /**
- * instances mehtods;
+ * Aggr props:
+ *  (RatesTotal, RatesCount, StudentsCount);
+ *  [SectionsCount, LecturesCount, CourseDuration]
+ *  [SectionLecturesCount, SectionDuration]
  */
 
 courseSchema.virtual("studentCount").get(function () {

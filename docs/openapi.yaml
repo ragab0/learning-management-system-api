@@ -390,13 +390,43 @@ paths:
         - Courses
       responses:
         "200":
-          description: List of courses
+          description: Course have been created
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/Course"
+
+    post:
+      summary: Create one
+      tags:
+        - Courses
+      responses:
+        "201":
+          description: Course have been created
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $mentorRe: "Mentor"
+                  $title: string
+                  $titleHook: string
+                  $levels: string
+                  $languages: string
+                  $whatYoulLearn: string
+                  $tags: string
+                  $requirements: string
+                  $description: string
+                  $modules:
+                    $title: string
+                    $lessons:
+                      $title: stirng
+                      $srcVideo: string
+                      $content: string
+                  $photo: ""
+                  $price: ""
 
   /course:
     get:
