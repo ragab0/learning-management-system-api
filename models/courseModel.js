@@ -96,6 +96,7 @@ const courseSchema = new mongoose.Schema(
     },
     photo: String,
     price: { type: Number, defualt: 0 },
+    enrolledStudentsCount: Number,
     createdAt: {
       type: Date,
       default: Date.now(),

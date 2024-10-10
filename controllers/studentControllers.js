@@ -1,20 +1,27 @@
 const ets = require("express");
 const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
+const Student = require("../models/users/studentModel");
 
 /**
  * Profile [basic info, courses, teachers, messages, chats, reviews];
  */
-const getAssignedTeachers = catchAsyncMiddle(async function (
+
+const getBasicInfo = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
   next
-) {});
+) {
+  const courses = Student.find;
+  next();
+});
 
 /**
- * Courses [enrolled, inCart inWishlist]:
- * 01) StudentEnrolledCoursesControllers:
- * 02) StudentCartCoursesControllers:
- * 03) StudentWishlistCoursesControllers:
+ * Courses [enrolled, enrolledContent ,archived cart, wishlist]:
+ * 01) StudentEnrolledCoursesControllers [getAll, enrollOne, archiveOne]:
+ * 02) StudentEnrolledContentCourse [enrolledContent of course with progress];
+ * 03  StudentArchivedCoursesControllers
+ * 04) StudentCartCoursesControllers: []
+ * 05) StudentWishlistCoursesControllers:
  *
  * Teachers [];
  * Reviews [];
@@ -28,7 +35,7 @@ const getEnrolledCourses = catchAsyncMiddle(async function (
   res = ets.response,
   next
 ) {
-  console.log("getEnrolledCourses Courses middle");
+  const courses = Student.find;
   next();
 });
 
@@ -50,7 +57,36 @@ const archiveEnrolledCourse = catchAsyncMiddle(async function (
   next();
 });
 
-// 02) StudentCartCoursesControllers:
+// 02) StudentEnrolledContentCourse
+const getEnrolledCourseContent = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response,
+  next
+) {
+  console.log("archiveEnrolledCourse Courses middle");
+  next();
+});
+
+// 03) StudentArchivedCoursesControllers:
+const getArchivedCourses = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response,
+  next
+) {
+  console.log("getCartCourses Courses middle");
+  next();
+});
+
+const unArchiveCourse = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response,
+  next
+) {
+  console.log("getCartCourses Courses middle");
+  next();
+});
+
+// 04) StudentCartCoursesControllers:
 const getCartCourses = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
@@ -60,25 +96,25 @@ const getCartCourses = catchAsyncMiddle(async function (
   next();
 });
 
-const addCourseToCart = catchAsyncMiddle(async function (
+const addCartCourse = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
   next
 ) {
-  console.log("addCourseToCart Courses middle");
+  console.log("addCartCourse Courses middle");
   next();
 });
 
-const removeCourseFromCart = catchAsyncMiddle(async function (
+const removeCartCourse = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
   next
 ) {
-  console.log("removeCourseFromCart Courses middle");
+  console.log("removeCartCourse Courses middle");
   next();
 });
 
-// 03) StudentWishlistCoursesControllers:
+// 05) StudentWishlistCoursesControllers:
 const getWishlistCourses = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
@@ -88,12 +124,12 @@ const getWishlistCourses = catchAsyncMiddle(async function (
   next();
 });
 
-const addCourseToWishlist = catchAsyncMiddle(async function (
+const addWishlistCourse = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
   next
 ) {
-  console.log("addCourseToWishlist Courses middle");
+  console.log("addWishlistCourse Courses middle");
   next();
 });
 
@@ -106,18 +142,33 @@ const removeCourseFromWishlist = catchAsyncMiddle(async function (
   next();
 });
 
-module.exports = {
-  getAssignedTeachers,
+/**
+ * Student Teachers;
+ */
 
+const getAssignedTeachers = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response,
+  next
+) {});
+
+module.exports = {
   getEnrolledCourses,
   enrollNewCourse,
   archiveEnrolledCourse,
 
+  getEnrolledCourseContent,
+
+  getArchivedCourses,
+  unArchiveCourse,
+
   getCartCourses,
-  addCourseToCart,
-  removeCourseFromCart,
+  addCartCourse,
+  removeCartCourse,
 
   getWishlistCourses,
-  addCourseToWishlist,
+  addWishlistCourse,
   removeCourseFromWishlist,
+
+  getAssignedTeachers,
 };

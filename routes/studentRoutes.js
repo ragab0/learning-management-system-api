@@ -32,9 +32,10 @@ router
 router.use("/reviews", reviewRoutes);
 
 /**
- * 02) routing the student courses routes [enrolled, wishlist, cartlist]
+ * 02) routing the student courses routes [enrolled, enrolledContent, archived, cart, wishlist]
  */
 
+// enrolled;
 router
   .route("/courses")
   .get(
@@ -50,6 +51,43 @@ router
     studentControllers.archiveEnrolledCourse
   );
 
+// enrolled content;
+router
+  .route("/courses/:courseId")
+  .get(
+    authControllers.assignableTo("student", "admin"),
+    studentControllers.getEnrolledCourseContent
+  );
+
+// archived;
+router
+  .route("/courses/archived")
+  .get(
+    authControllers.assignableTo("student", "admin"),
+    studentControllers.getArchivedCourses
+  )
+  .delete(
+    authControllers.assignableTo("student", "admin"),
+    studentControllers.unArchiveCourse
+  );
+
+// cart
+router
+  .route("/courses/cart")
+  .get(
+    authControllers.assignableTo("student", "admin"),
+    studentControllers.getCartCourses
+  )
+  .post(
+    authControllers.assignableTo("student", "admin"),
+    studentControllers.addCartCourse
+  )
+  .delete(
+    authControllers.assignableTo("student", "admin"),
+    studentControllers.removeCartCourse
+  );
+
+// wishlist;
 router
   .route("/courses/wishlist")
   .get(
@@ -58,26 +96,11 @@ router
   )
   .post(
     authControllers.assignableTo("student", "admin"),
-    studentControllers.addCourseToWishlist
+    studentControllers.addWishlistCourse
   )
   .delete(
     authControllers.assignableTo("student", "admin"),
     studentControllers.archiveEnrolledCourse
-  );
-
-router
-  .route("/courses/cartlist")
-  .get(
-    authControllers.assignableTo("student", "admin"),
-    studentControllers.getCartCourses
-  )
-  .post(
-    authControllers.assignableTo("student", "admin"),
-    studentControllers.addCourseToCart
-  )
-  .delete(
-    authControllers.assignableTo("student", "admin"),
-    studentControllers.removeCourseFromCart
   );
 
 /**

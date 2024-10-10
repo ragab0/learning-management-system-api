@@ -9,7 +9,7 @@ const mentorSchema = new mongoose.Schema({
     },
   ],
   expertise: [String],
-  rating: { type: Number, min: 0, max: 5 },
+  professionalDescription: String,
 });
 
 const Mentor = User.discriminator("Mentor", mentorSchema);

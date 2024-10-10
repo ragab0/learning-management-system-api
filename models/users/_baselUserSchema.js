@@ -57,8 +57,9 @@ const userSchema = new mongoose.Schema(
     passwordChangedAt: Date,
     photo: String,
     headline: String,
+    description: String,
     language: String,
-    links: Array(String),
+    links: Array(Object),
     createdAt: {
       type: Date,
       default: Date.now(),
