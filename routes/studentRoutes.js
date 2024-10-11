@@ -27,9 +27,17 @@ router
   );
 
 /**
- * 01) mutating the review routes;
+ * 00) mutating the review routes;
  */
 router.use("/reviews", reviewRoutes);
+
+/**
+ * 01) basic student ifno (profile)
+ */
+router
+  .route("/profile")
+  .get(userHandlers.getBasicInfoOf("student"))
+  .put(userHandlers.updateBasicInfoOf("student"));
 
 /**
  * 02) routing the student courses routes [enrolled, enrolledContent, archived, cart, wishlist]

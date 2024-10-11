@@ -69,6 +69,12 @@ const studentSchema = new mongoose.Schema({
  *
  */
 
+studentSchema.methods.getBasicInfo = function () {
+  const { enrolledCourses, archivedCourses, password, __t, ...filteredInfo } =
+    this.toObject();
+  return filteredInfo;
+};
+
 const getEnrolledCourseWithProgress = catchAsyncMiddle(async (req, res) => {
   const { courseId } = req.body;
   const student = req.user;

@@ -2,23 +2,7 @@ const ets = require("express");
 const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
 const Course = require("../models/courseModel");
 const AppError = require("../utils/appError");
-
-function sendResults(res, results, page, totalPages) {
-  res.status(200).json({
-    status: "success",
-    results,
-    page,
-    totalPages,
-    count: results?.length || 0,
-  });
-}
-
-function sendResult(res, result) {
-  res.status(result ? 200 : 204).json({
-    status: "success",
-    result,
-  });
-}
+const { sendResults, sendResult } = require("./handlers/send");
 
 const getCourses = catchAsyncMiddle(async function (
   req = ets.request,

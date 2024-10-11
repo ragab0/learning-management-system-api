@@ -3,11 +3,43 @@ const catchAsyncMiddle = require("../../utils/catchAsyncMiddle");
 const Student = require("../../models/users/studentModel");
 const Mentor = require("../../models/users/mentorModel");
 
+const collections = {
+  student: Student,
+  mentor: Mentor,
+};
 class UserControllers {
-  static collections = {
-    student: Student,
-    mentor: Mentor,
-  };
+  static getBasicInfoOf(role) {
+    return catchAsyncMiddle(async function (
+      req = ets.request,
+      res = ets.response,
+      next
+    ) {
+      const result = (
+        await collections[role].findById(req.user._id)
+      ).getBasicInfo();
+      res.status(200).json({
+        status: "success",
+        result,
+      });
+    });
+  }
+
+  static updateBasicInfoOf(role) {
+    return catchAsyncMiddle(async function (
+      req = ets.request,
+      res = ets.response,
+      next
+    ) {
+      const result = await collections[role].findByIdAndUpdate(
+        req.user._id,
+        req.body,
+        { runValidators: true }
+      );
+      res.status(201).json({
+        status: "success",
+      });
+    });
+  }
 
   static getAllUsersOfRole(role) {
     return catchAsyncMiddle(async function (

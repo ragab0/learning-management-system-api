@@ -12,5 +12,14 @@ const mentorSchema = new mongoose.Schema({
   professionalDescription: String,
 });
 
+/**
+ * Instance methods:
+ */
+
+mentorSchema.methods.getBasicInfo = function () {
+  const { taughtCourses, password, __t, ...filteredInfo } = this.toObject();
+  return filteredInfo;
+};
+
 const Mentor = User.discriminator("Mentor", mentorSchema);
 module.exports = Mentor;
