@@ -59,14 +59,6 @@ router
     studentControllers.archiveEnrolledCourse
   );
 
-// enrolled content;
-router
-  .route("/courses/:courseId")
-  .get(
-    authControllers.assignableTo("student", "admin"),
-    studentControllers.getEnrolledCourseContent
-  );
-
 // archived;
 router
   .route("/courses/archived")
@@ -90,7 +82,7 @@ router
     authControllers.assignableTo("student", "admin"),
     studentControllers.addCartCourse
   )
-  .delete(
+  .put(
     authControllers.assignableTo("student", "admin"),
     studentControllers.removeCartCourse
   );
@@ -106,9 +98,17 @@ router
     authControllers.assignableTo("student", "admin"),
     studentControllers.addWishlistCourse
   )
-  .delete(
+  .put(
     authControllers.assignableTo("student", "admin"),
-    studentControllers.archiveEnrolledCourse
+    studentControllers.removeWishlistCourse
+  );
+
+// enrolled content;
+router
+  .route("/courses/:courseId")
+  .get(
+    authControllers.assignableTo("student", "admin"),
+    studentControllers.getEnrolledCourseContent
   );
 
 /**

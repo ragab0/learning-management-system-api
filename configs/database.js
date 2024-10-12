@@ -5,6 +5,8 @@
 
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const app = require("../app");
+const AppError = require("../utils/appError");
 
 dotenv.config({ path: ".env" });
 
@@ -32,6 +34,7 @@ const connectDatabase = async () => {
     );
   } catch (error) {
     console.log("DB connection failed...", error);
+    app.use(new AppError("DB connection is failed! please report us."));
   }
 };
 
