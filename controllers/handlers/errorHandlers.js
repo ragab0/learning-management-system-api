@@ -19,9 +19,10 @@ module.exports = function mainErrorController(err, req, res, next) {
       err = handleMongodbValidationError(err);
     } else if (err.code === 11000) {
       err = handleMongodbDuplicateFieldsError(err);
+    } else if (err.name === "MongooseError") {
+      err = handleMongooseError(err);
     } else if (["JsonWebTokenError", "TokenExpiredError"].includes(err.name)) {
       err = handleJWTErrors(err);
-    } else if (false) {
     } else if (false) {
     } else if (false) {
     } else if (false) {
@@ -86,6 +87,10 @@ function handleMongodbDuplicateFieldsError(err) {
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
   const message = `Served value: ${value}. Please use another value!`;
   return new AppError(message, 400);
+}
+
+function handleMongooseError(err) {
+  return new AppError("DB connection is failed! please report us", 500);
 }
 
 function handleJWTErrors(err) {

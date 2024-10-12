@@ -6,11 +6,11 @@ const AppError = require("../../utils/appError");
 const progressSchema = new mongoose.Schema({
   contentProgress: [
     {
-      moduleId: { type: mongoose.Schema.Types.ObjectId },
+      module: { type: mongoose.Schema.Types.ObjectId },
       isCompleted: { type: Boolean, default: false },
       completedLessons: [
         {
-          lessonId: { type: mongoose.Schema.Types.ObjectId },
+          lesson: { type: mongoose.Schema.Types.ObjectId },
           isCompleted: { type: Boolean, default: false },
           completedAt: Date,
         },
@@ -23,7 +23,7 @@ const progressSchema = new mongoose.Schema({
 const studentSchema = new mongoose.Schema({
   enrolledCourses: [
     {
-      courseId: {
+      course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
       },
@@ -37,7 +37,7 @@ const studentSchema = new mongoose.Schema({
   ],
   archivedCourses: [
     {
-      courseId: {
+      course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
       },
@@ -46,7 +46,7 @@ const studentSchema = new mongoose.Schema({
   ],
   cartCourses: [
     {
-      courseId: {
+      course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
       },
@@ -55,7 +55,7 @@ const studentSchema = new mongoose.Schema({
   ],
   wishCourses: [
     {
-      courseId: {
+      course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
       },
@@ -81,14 +81,14 @@ const getEnrolledCourseWithProgress = catchAsyncMiddle(async (req, res) => {
 
   // Find the enrolled course with progress
   let enrolledCourse = student.enrolledCourses.find(
-    (course) => course.courseId.toString() === courseId
+    (course) => course.course.toString() === courseId
   );
 
   if (!enrolledCourse) {
     return next(new AppError("Course not found in enrolled section!", 404));
   }
 
-  enrolledCourse = enrolledCourse.populate("enrolledCourses.courseId");
+  enrolledCourse = enrolledCourse.populate("enrolledCourses.course");
 
   // Return the course data along with the student's progress
   sendD;

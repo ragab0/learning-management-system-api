@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
 const notificationSchema = {
-  senderId: { type: mongoose.Schema.Types.ObjectId, ref: "Mentor" },
-  recieversIds: [
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: "Mentor" },
+  recievers: [
     {
-      studentId: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
+      student: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
       isRead: { type: Boolean, default: false },
     },
   ],

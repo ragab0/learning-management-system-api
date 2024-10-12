@@ -74,7 +74,7 @@ const createCourse = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response
 ) {
-  const course = await Course.create({ mentorId: req.user._id, ...req.body });
+  const course = await Course.create({ mentor: req.user._id, ...req.body });
   sendResult(res, course);
 });
 

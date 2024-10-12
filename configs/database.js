@@ -34,7 +34,11 @@ const connectDatabase = async () => {
     );
   } catch (error) {
     console.log("DB connection failed...", error);
-    app.use(new AppError("DB connection is failed! please report us."));
+    return new Error("DB connection is failed! please report us"); // stop the app;
+    // app.use(function (req, res, next) {
+    //   // runs only once - on app starting ............................;
+    //   next(new AppError("DB connection is failed! please report us."));
+    // });
   }
 };
 

@@ -4,6 +4,7 @@ const Student = require("../models/users/studentModel");
 const Mentor = require("../models/users/mentorModel");
 const { sendResult, sendResults } = require("./handlers/send");
 const AppError = require("../utils/appError");
+const { populate } = require("../models/courseModel");
 
 /**
  * Student [basic info (Profile), courses, teachers, messages, chats, reviews];
@@ -14,6 +15,7 @@ const AppError = require("../utils/appError");
  * 03  archived: [getAll, unArOne];
  * 04) cart: [getAll, addOne, removeOne, wishOne (move)];
  * 05) wishlist: [getAll, addOne, removeOne, cartOne (move)];
+ * 06) checkout cart courses;
  *
  * ~~Teachers [];
  * ~~Reviews [];
@@ -27,9 +29,16 @@ function getStudentCourses(arrField) {
     const populatedResults = await req.user.populate({
       path: `${arrField}._id`,
       model: "Course",
+      populate: {
+        path: "mentor",
+        select: "fname lname",
+      },
     });
 
     const results = populatedResults[arrField];
+
+    console.log(results);
+
     const totalPages = Math.ceil(results.length / parseInt(pageSize));
     sendResults(res, results, +page, totalPages);
   };
@@ -45,7 +54,7 @@ const getCartCourses = catchAsyncMiddle(getStudentCourses("cartCourses"));
 const getWishlistCourses = catchAsyncMiddle(getStudentCourses("wishCourses"));
 
 /******************** StudentEnrolledCoursesControllers: ********************/
-// enroll not subscribe which is the secure version......
+// enroll not subscribe that is the secure version......
 const enrollNewCourse = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
@@ -72,9 +81,10 @@ const archiveEnrolledCourse = catchAsyncMiddle(async function (
   const index = req.user.enrolledCourses.findIndex(
     (e) => e && e._id.equals(id)
   );
-  if (index === -1) return next(new AppError("Course not found!", 404));
+  if (index === -1)
+    return next(new AppError("Course not found in enrolled courses!", 404));
 
-  const result = req.user.enrolledCourses.splice[(index, 1)];
+  const result = req.user.enrolledCourses.splice(index, 1);
   req.user.archivedCourses.push(result);
   await req.user.save();
   sendResult(res, undefined);
@@ -102,7 +112,7 @@ const unArchiveCourse = catchAsyncMiddle(async function (
     (e) => e && e._id.equals(id)
   );
   if (index === -1)
-    return next(new AppError("Course not found in archived!", 404));
+    return next(new AppError("Course not found in archived courses!", 404));
 
   const result = req.user.archivedCourses.splice[(index, 1)];
   req.user.enrolledCourses.push(result);
@@ -119,12 +129,25 @@ const addCartCourse = catchAsyncMiddle(async function (
 ) {
   const { id } = req.body;
 
-  const index1 = req.user.cartCourses.findIndex((e) => e && e._id.equals(id));
+  const index1 = req.user.enrolledCourses.findIndex(
+    (e) => e && e._id.equals(id)
+  );
   if (index1 !== -1)
+    return next(new AppError("Course is already enrolled in!", 404));
+
+  const index2 = req.user.archivedCourses.findIndex(
+    (e) => e && e._id.equals(id)
+  );
+  if (index2 !== -1)
+    return next(new AppError("Course is already enrolled in & archived!", 404));
+
+  const index3 = req.user.cartCourses.findIndex((e) => e && e._id.equals(id));
+  if (index3 !== -1)
     return next(new AppError("Course is already in cart!", 404));
 
-  const index2 = req.user.wishCourses.findIndex((e) => e && e._id.equals(id));
-  if (index2 !== -1) req.user.wishCourses.splice(index2, 1);
+  // remove it without causing error;
+  const index = req.user.wishCourses.findIndex((e) => e && e._id.equals(id));
+  if (index !== -1) req.user.wishCourses.splice(index, 1);
 
   req.user.cartCourses.push(id);
   await req.user.save();
@@ -147,6 +170,19 @@ const removeCartCourse = catchAsyncMiddle(async function (
   sendResult(res, undefined);
 });
 
+/****************** StudentCartCoursesCheckout ******************/
+
+const checkout = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response,
+  next
+) {
+  // payment FEATURE IS COMING...;
+  req.user.enrolledCourses.push(...req.user.cartCourses.splice(0));
+  await req.user.save();
+  sendResult(res, undefined);
+});
+
 /*************** StudentWishlistCoursesControllers: ***************/
 
 const addWishlistCourse = catchAsyncMiddle(async function (
@@ -156,12 +192,25 @@ const addWishlistCourse = catchAsyncMiddle(async function (
 ) {
   const { id } = req.body;
 
-  const index1 = req.user.wishCourses.findIndex((e) => e && e._id.equals(id));
+  const index1 = req.user.enrolledCourses.findIndex(
+    (e) => e && e._id.equals(id)
+  );
   if (index1 !== -1)
+    return next(new AppError("Course is already enrolled in!", 404));
+
+  const index2 = req.user.archivedCourses.findIndex(
+    (e) => e && e._id.equals(id)
+  );
+  if (index2 !== -1)
+    return next(new AppError("Course is already enrolled in & archived!", 404));
+
+  const index3 = req.user.wishCourses.findIndex((e) => e && e._id.equals(id));
+  if (index3 !== -1)
     return next(new AppError("Course is already in wishlist!", 404));
 
-  const index2 = req.user.cartCourses.findIndex((e) => e && e._id.equals(id));
-  if (index2 !== -1) req.user.cartCourses.splice(index2, 1);
+  // remove it without causing error;
+  const index = req.user.cartCourses.findIndex((e) => e && e._id.equals(id));
+  if (index !== -1) req.user.cartCourses.splice(index, 1);
 
   req.user.wishCourses.push(id);
   await req.user.save();
@@ -200,6 +249,7 @@ module.exports = {
   enrollNewCourse,
   archiveEnrolledCourse,
   getEnrolledCourseContent,
+  checkout,
 
   getArchivedCourses,
   unArchiveCourse,

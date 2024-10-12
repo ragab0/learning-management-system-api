@@ -27,7 +27,7 @@ const moduleSchema = new mongoose.Schema({
 
 const courseSchema = new mongoose.Schema(
   {
-    mentorId: {
+    mentor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Mentor",
       required: [true, "A course must be assigned to a mentor"],
