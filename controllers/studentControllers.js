@@ -5,6 +5,7 @@ const Mentor = require("../models/users/mentorModel");
 const { sendResult, sendResults } = require("./handlers/send");
 const AppError = require("../utils/appError");
 const { populate } = require("../models/courseModel");
+const Course = require("../models/courseModel");
 
 /**
  * Student [basic info (Profile), courses, teachers, messages, chats, reviews];
@@ -31,6 +32,7 @@ function getStudentCourses(arrField) {
       model: "Course",
       populate: {
         path: "mentor",
+        model: "Mentor",
         select: "fname lname",
       },
     });
@@ -67,7 +69,7 @@ const enrollNewCourse = catchAsyncMiddle(async function (
   if (index !== -1)
     return next(new AppError("Course is already enrolled!", 404));
 
-  req.user.enrolledCourses.push(id);
+  req.user.enrolledCourses.push({ _id: id });
   await req.user.save();
   sendResult(res, undefined);
 });
@@ -90,14 +92,19 @@ const archiveEnrolledCourse = catchAsyncMiddle(async function (
   sendResult(res, undefined);
 });
 
-const getEnrolledCourseContent = catchAsyncMiddle(async function (
+const getOwnCourseContent = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
   next
 ) {
   let { id } = req.body;
-  const result = req.user.enrolledCourses.find((e) => e && e._id.equals(id));
+  const result =
+    req.user.enrolledCourses.find((e) => e && e._id.equals(id)) ||
+    req.user.archivedCourses.find((e) => e && e._id.equals(id));
   if (!result) return next(new AppError("Buy first to get access!", 404));
+
+  console.log("RRRRRRRRRRRRRRR:", result);
+
   sendResult(res, result);
 });
 
@@ -149,7 +156,7 @@ const addCartCourse = catchAsyncMiddle(async function (
   const index = req.user.wishCourses.findIndex((e) => e && e._id.equals(id));
   if (index !== -1) req.user.wishCourses.splice(index, 1);
 
-  req.user.cartCourses.push(id);
+  req.user.cartCourses.push({ _id: id });
   await req.user.save();
   sendResult(res, undefined);
 });
@@ -160,7 +167,6 @@ const removeCartCourse = catchAsyncMiddle(async function (
   next
 ) {
   const { id } = req.body;
-  console.log("######################################## REMOVE CART", req.body);
 
   const index = req.user.cartCourses.findIndex((e) => e && e._id.equals(id));
   if (index === -1) return next(new AppError("Course not found in cart!", 404));
@@ -177,8 +183,18 @@ const checkout = catchAsyncMiddle(async function (
   res = ets.response,
   next
 ) {
+  if (req.user.cartCourses?.length <= 0) {
+    return next(new AppError("Cart is empty!", 404));
+  }
+
   // payment FEATURE IS COMING...;
-  req.user.enrolledCourses.push(...req.user.cartCourses.splice(0));
+  req.user.enrolledCourses.push(...req.user.cartCourses);
+
+  await Course.updateMany(
+    { _id: { $in: req.user.cartCourses.splice(0) } },
+    { $inc: { totalStudents: 1 } }
+  );
+
   await req.user.save();
   sendResult(res, undefined);
 });
@@ -208,11 +224,11 @@ const addWishlistCourse = catchAsyncMiddle(async function (
   if (index3 !== -1)
     return next(new AppError("Course is already in wishlist!", 404));
 
-  // remove it without causing error;
+  // if in cart remove it without causing error;
   const index = req.user.cartCourses.findIndex((e) => e && e._id.equals(id));
   if (index !== -1) req.user.cartCourses.splice(index, 1);
 
-  req.user.wishCourses.push(id);
+  req.user.wishCourses.push({ _id: id });
   await req.user.save();
   sendResult(res, undefined);
 });
@@ -223,8 +239,6 @@ const removeWishlistCourse = catchAsyncMiddle(async function (
   next
 ) {
   const { id } = req.body;
-  console.log("######################################## REMOVE WISH", req.body);
-
   const index = req.user.wishCourses.findIndex((e) => e && e._id.equals(id));
   if (index === -1)
     return next(new AppError("Course not found in wishlist!", 404));
@@ -242,13 +256,17 @@ const getAssignedTeachers = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
   next
-) {});
+) {
+  const index = req.user.wishCourses.findIndex((e) => e && e._id.equals(id));
+  if (index === -1)
+    return next(new AppError("Course not found in wishlist!", 404));
+});
 
 module.exports = {
   getEnrolledCourses,
   enrollNewCourse,
   archiveEnrolledCourse,
-  getEnrolledCourseContent,
+  getOwnCourseContent,
   checkout,
 
   getArchivedCourses,

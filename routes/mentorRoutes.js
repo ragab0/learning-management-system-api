@@ -27,8 +27,20 @@ router
   );
 
 /**
- * 01) mutating the review routes;
+ * 00) mutating the review routes;
  */
 router.use("/reviews", reviewRoutes);
+
+/**
+ * 01) basic mentor ifno (profile)
+ */
+router
+  .route("/profile")
+  .get(userHandlers.getBasicInfoOf("mentor"))
+  .put(userHandlers.updateBasicInfoOf("mentor"));
+
+/**
+ * 02) routing the mentor courses routes [enrolled, enrolledContent, archived, cart, wishlist]
+ */
 
 module.exports = router;

@@ -37,13 +37,13 @@ const getCourses = catchAsyncMiddle(async function (
 
   // 03) sort:
   const sortOptions = {
-    "a-z": { title: 1 },
-    "z-a": { title: -1 },
+    title: { title: 1 },
+    "-title": { title: -1 },
     price: { price: 1 },
     "-price": { price: -1 },
-    // rate: { rate: -1 }, // as higher rate is better
-    oldest: { createdAt: 1 },
-    newest: { createdAt: -1 },
+    rate: { rate: 1 },
+    top: { totalStudents: 1 },
+    recently: { createdAt: 1 },
   };
   const sortCriteria = sortOptions[sortBy] || { title: 1 };
 
@@ -55,6 +55,18 @@ const getCourses = catchAsyncMiddle(async function (
   const totalCourses = await Course.countDocuments();
   const totalPages = Math.ceil(totalCourses / pageSize);
   sendResults(res, courses, page, totalPages);
+});
+
+const getTopCourses = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response,
+  next
+) {
+  req.query.page = req.query.page || 1;
+  req.query.pageSize = req.query.pageSize || 8;
+  req.query.sortBy = "top";
+  return getCourses(req, res);
+  c;
 });
 
 const getCourse = catchAsyncMiddle(async function (
@@ -75,6 +87,8 @@ const createCourse = catchAsyncMiddle(async function (
   res = ets.response
 ) {
   const course = await Course.create({ mentor: req.user._id, ...req.body });
+  req.user.taughtCourses.push(course._id);
+  await req.user.save();
   sendResult(res, course);
 });
 
@@ -109,6 +123,7 @@ const deleteCourse = catchAsyncMiddle(async function (
 
 module.exports = {
   getCourses,
+  getTopCourses,
   createCourse,
   getCourse,
   updateCourse,

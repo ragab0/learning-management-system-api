@@ -1,26 +1,26 @@
 const ets = require("express");
 const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
+const Mentor = require("../models/users/mentorModel");
 
 /**
- * Student info [basic info (Profile), courses, teachers, messages, chats, reviews];
+ * Top mentors
+ * Mentor [courses, teachers, messages, chats, reviews];
  */
 
-const getBasicInfo = catchAsyncMiddle(async function (
+const getTopMentors = catchAsyncMiddle(async function (
   req = ets.request,
-  res = ets.response,
-  next
+  res = ets.response
 ) {
-  console.log(req.user);
-  next();
-});
-
-const updateBasicInfo = catchAsyncMiddle(async function (
-  req = ets.request,
-  res = ets.response,
-  next
-) {
-  Student.findByIdAndUpdate(req.user._id, req.body, { runValidators: true });
-  next();
+  const topMentors = Mentor.aggregate([
+    {
+      $project: {
+        name: 1, // Include any other fields you want in the result
+        numberOfCourses: { $size: "$taughtCourses" }, // Calculate the number of created courses
+      },
+    },
+    { $sort: { numberOfCourses: -1 } }, // Sort mentors by the number of courses in descending order
+    { $limit: 10 }, // Limit to top 10 mentors
+  ]);
 });
 
 const getCreatedCourses = catchAsyncMiddle(async function (

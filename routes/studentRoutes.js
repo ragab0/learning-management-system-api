@@ -63,7 +63,7 @@ router
   .route("/courses/study")
   .get(
     authControllers.assignableTo("student", "admin"),
-    studentControllers.getEnrolledCourseContent
+    studentControllers.getOwnCourseContent
   );
 
 // archived;
@@ -115,7 +115,7 @@ router
   .route("/courses/:courseId")
   .get(
     authControllers.assignableTo("student", "admin"),
-    studentControllers.getEnrolledCourseContent
+    studentControllers.getOwnCourseContent
   );
 
 // checkout card courses

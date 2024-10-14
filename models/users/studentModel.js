@@ -70,8 +70,15 @@ const studentSchema = new mongoose.Schema({
  */
 
 studentSchema.methods.getBasicInfo = function () {
-  const { enrolledCourses, archivedCourses, password, __t, ...filteredInfo } =
-    this.toObject();
+  const {
+    enrolledCourses,
+    archivedCourses,
+    cartCourses,
+    wishCourses,
+    password,
+    __t,
+    ...filteredInfo
+  } = this.toObject();
   return filteredInfo;
 };
 
