@@ -18,8 +18,12 @@ const app = express();
 // 01) barser of req-res middles: [json, cookies, compression,]
 app.use(
   cors({
-    origin: "http://localhost:3000", // our React app's origin
-    credentials: true, // Allow credentials
+    origin: [
+      "http://localhost:3000", // dev !!!!!!!!!!!!!
+      "http://localhost:3001", // dev !!!!!!!!!!!!!
+      "https://lms-depi-final-project.vercel.app",
+    ],
+    credentials: true,
   })
 );
 app.use(express.json());
