@@ -33,7 +33,7 @@ const connectDatabase = async () => {
       `Pinged your ${NODE_ENV} database. You successfully connected to MongoDB!`
     );
   } catch (error) {
-    console.log("DB connection failed...", error);
+    console.log("DB connection failed.................................", error);
     return new Error("DB connection is failed! please report us"); // stop the app;
     // app.use(function (req, res, next) {
     //   // runs only once - on app starting ............................;
