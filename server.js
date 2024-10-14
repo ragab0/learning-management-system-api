@@ -3,9 +3,7 @@ const connectDatabase = require("./configs/database");
 const dotenv = require("dotenv");
 
 dotenv.config({ path: "./env" });
-const { PORT } = process.env;
-
-console.log(PORT);
+const { PORT = 3500, NODE_ENV } = process.env;
 
 /** connect to the db */
 connectDatabase();
@@ -14,6 +12,10 @@ connectDatabase();
  * configuring && running our app:
  *
  */
-app.listen(PORT || 3500, "localhost", function () {
-  console.log("Server is running on", PORT);
-});
+app.listen(
+  PORT,
+  NODE_ENV === "development" ? "localhost" : "0.0.0.0",
+  function () {
+    console.log("Server is running on", PORT);
+  }
+);
