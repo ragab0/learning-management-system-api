@@ -33,10 +33,11 @@ class UserControllers {
       const result = await collections[role].findByIdAndUpdate(
         req.user._id,
         req.body,
-        { runValidators: true }
+        { runValidators: true, new: true }
       );
       res.status(201).json({
         status: "success",
+        user: result,
       });
     });
   }

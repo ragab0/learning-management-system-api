@@ -5,7 +5,7 @@ const mentorControllers = require("../controllers/mentorControllers");
 const reviewRoutes = require("../routes/reviewRoutes");
 
 const router = ets.Router();
-app.use(authControllers.protect);
+router.use(authControllers.protect);
 
 router
   .route("/")
@@ -40,7 +40,14 @@ router
   .put(userHandlers.updateBasicInfoOf("mentor"));
 
 /**
- * 02) routing the mentor courses routes [enrolled, enrolledContent, archived, cart, wishlist]
+ * 02) routing the mentor courses
  */
+router
+  .route("/courses")
+  .get(mentorControllers.getTaughtCourses)
+  .post(mentorControllers.createCourse)
+  .put(mentorControllers.updateTaughtCourse)
+  .delete(mentorControllers.deleteTaughtCourse);
+router.route("/courses/:id").get(mentorControllers.getTaughtCourse);
 
 module.exports = router;

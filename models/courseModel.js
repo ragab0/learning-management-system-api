@@ -71,6 +71,12 @@ const courseSchema = new mongoose.Schema(
         message: "A course must have at least one tag",
       },
     },
+    customers: {
+      type: [mongoose.Schema.Types.ObjectId],
+    },
+    promotions: {
+      type: [mongoose.Schema.Types.ObjectId],
+    },
     requirements: {
       type: [String],
       validate: {

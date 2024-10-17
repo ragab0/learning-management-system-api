@@ -1,6 +1,7 @@
 const AppError = require("../../utils/appError");
 module.exports = function mainErrorController(err, req, res, next) {
-  console.error("EEEEEEEEEEEEEEe", err);
+  console.error("EEEEEEEEEEEEEEe (handlerError)");
+  console.error(err);
 
   /**
    * if not operational - not handled:
