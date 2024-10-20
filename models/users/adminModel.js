@@ -5,5 +5,9 @@ const adminSchema = new mongoose.Schema({
   permissions: [String],
 });
 
+adminSchema.methods.getBasicInfo = function () {
+  return this;
+};
+
 const Admin = User.discriminator("Admin", adminSchema);
 module.exports = Admin;

@@ -8,8 +8,12 @@ const mentorSchema = new mongoose.Schema({
       ref: "Course",
     },
   ],
-  expertise: [String],
-  professionalDescription: String,
+  archivedTaughtCourses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+    },
+  ],
 });
 
 /**
@@ -38,18 +42,18 @@ const Mentor = User.discriminator("Mentor", mentorSchema);
 //   { $limit: 10 }, // Limit to top 10 mentors
 // ]).then((topMentors) => console.log(topMentors));
 
-(async function () {
-  const user = await Mentor.findById("6705c7e3166cc69d2f15de00").populate(
-    "taughtCourses"
-  );
+// (async function () {
+//   const user = await Mentor.findById("6705c7e3166cc69d2f15de00").populate(
+//     "taughtCourses"
+//   );
 
-  const course = user.taughtCourses.find(
-    (c) => c._id.toString() === "670fc382b9f296fa428f1cf7"
-  );
+//   const course = user.taughtCourses.find(
+//     (c) => c._id.toString() === "670fc382b9f296fa428f1cf7"
+//   );
 
-  course.levels.push("legend");
-  await user.save();
-  console.log(course);
-})();
+//   course.levels.push("legend");
+//   await user.save();
+//   console.log(course);
+// })();
 
 module.exports = Mentor;

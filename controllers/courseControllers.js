@@ -16,7 +16,9 @@ const getCourses = catchAsyncMiddle(async function (
   const skipCount = (page - 1) * pageSize;
 
   // 02) filter:
-  const filterConditions = {};
+  const filterConditions = {
+    isRemoved: false,
+  };
   if (rates) filterConditions.rates = { $in: rates.split(",").map(Number) };
   if (modules)
     filterConditions.numberOfModules = {
@@ -66,7 +68,6 @@ const getTopCourses = catchAsyncMiddle(async function (
   req.query.pageSize = req.query.pageSize || 8;
   req.query.sortBy = "top";
   return getCourses(req, res);
-  c;
 });
 
 const getCourse = catchAsyncMiddle(async function (
@@ -75,10 +76,10 @@ const getCourse = catchAsyncMiddle(async function (
   next
 ) {
   const { courseId } = req.params;
-  const { id } = req.body;
-  const course = await Course.findById(courseId || id);
-
+  const course = await Course.findById(courseId);
   if (!course) return next(new AppError("Course isn't exist!", 404));
+  else if (course.isRemoved)
+    return next(new AppError("Course is archived!", 404));
   sendResult(res, course);
 });
 

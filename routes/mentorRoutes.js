@@ -44,10 +44,13 @@ router
  */
 router
   .route("/courses")
-  .get(mentorControllers.getTaughtCourses)
+  .get(mentorControllers.getAllTaughtCourses)
   .post(mentorControllers.createCourse)
   .put(mentorControllers.updateTaughtCourse)
   .delete(mentorControllers.deleteTaughtCourse);
+router
+  .route("/courses/extract-playlist")
+  .post(mentorControllers.youtubePlaylistExtractor);
 router.route("/courses/:id").get(mentorControllers.getTaughtCourse);
 
 module.exports = router;

@@ -37,6 +37,8 @@
     "mongoose-schema-extend": "^0.2.2",
     "socket.io": "^4.7.5",
     "swagger-ui-express": "^5.0.1",
-    "yamljs": "^0.3.0"
+    "yamljs": "^0.3.0",
+    "youtube-ext": "^1.1.25",
+    "youtube-playlist": "^1.0.4"
   }
 }

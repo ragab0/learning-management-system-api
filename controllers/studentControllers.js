@@ -39,8 +39,6 @@ function getStudentCourses(arrField) {
 
     const results = populatedResults[arrField];
 
-    console.log(results);
-
     const totalPages = Math.ceil(results.length / parseInt(pageSize));
     sendResults(res, results, +page, totalPages);
   };
@@ -99,8 +97,12 @@ const getOwnCourseContent = catchAsyncMiddle(async function (
 ) {
   let { id } = req.body;
   const result =
-    req.user.enrolledCourses.find((e) => e && e._id.equals(id)) ||
-    req.user.archivedCourses.find((e) => e && e._id.equals(id));
+    (await req.user.populate("enrolledCourses")).enrolledCourses.find(
+      (e) => e && e._id.equals(id)
+    ) ||
+    (await req.user.populate("archivedCourses")).archivedCourses.find(
+      (e) => e && e._id.equals(id)
+    );
   if (!result) return next(new AppError("Buy first to get access!", 404));
 
   console.log("RRRRRRRRRRRRRRR:", result);

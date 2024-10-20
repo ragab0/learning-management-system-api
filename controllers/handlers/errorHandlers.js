@@ -24,7 +24,8 @@ module.exports = function mainErrorController(err, req, res, next) {
       err = handleMongooseError(err);
     } else if (["JsonWebTokenError", "TokenExpiredError"].includes(err.name)) {
       err = handleJWTErrors(err);
-    } else if (false) {
+    } else if (err.name === "PayloadTooLargeError") {
+      err = handlePayloadError(err);
     } else if (false) {
     } else if (false) {
     } else if (false) {
@@ -99,5 +100,10 @@ function handleJWTErrors(err) {
     "For your security. Please log in again!",
     401
   );
+  return operationalError;
+}
+
+function handlePayloadError(err) {
+  const operationalError = new AppError("Data is too large to process!", 404);
   return operationalError;
 }

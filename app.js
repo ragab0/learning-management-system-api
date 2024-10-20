@@ -10,6 +10,7 @@ const mainErrorController = require("./controllers/handlers/errorHandlers");
 const authRouter = require("./routes/authRoutes");
 const studentRouter = require("./routes/studentRoutes");
 const mentorRouter = require("./routes/mentorRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const courseRouter = require("./routes/courseRoutes");
 const logger = require("./controllers/handlers/logger");
 
@@ -45,7 +46,7 @@ app.use(
 app.use("/api/v1/", authRouter);
 app.use("/api/v1/student", studentRouter);
 app.use("/api/v1/mentor", mentorRouter);
-app.use("/api/v1/admin", authRouter);
+app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/top", authRouter);
 app.use("/api/v1/courses", courseRouter);
 

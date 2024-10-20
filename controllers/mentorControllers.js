@@ -3,6 +3,10 @@ const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
 const Mentor = require("../models/users/mentorModel");
 const Course = require("../models/courseModel");
 const { sendResults, sendResult } = require("./handlers/send");
+const AppError = require("../utils/appError");
+const { getYoutubePlaylistId } = require("youtube-ext/dist/utils");
+const { playlistInfo } = require("youtube-ext");
+// const youtubePlaylist = require("youtube-playlist");
 
 /**
  * [getProfile, updateProfile] handled by userControllers;
@@ -32,7 +36,7 @@ const getTopMentors = catchAsyncMiddle(async function (
 
 /** Taught courses [getAll, create, update, and delete one] */
 
-const getTaughtCourses = catchAsyncMiddle(async function (
+const getAllTaughtCourses = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
   next
@@ -62,13 +66,18 @@ const updateTaughtCourse = catchAsyncMiddle(async function (
   next
 ) {
   // updating populated data doesn't affect the real reference;
-  const { id } = req.body;
+  const { newCourse } = req.body;
+  const { id, status } = newCourse;
+
   const index = req.user.taughtCourses.findIndex(
     (c) => c._id.toString() === id
   );
-  if (index === -1) return next(new AppError("Course not found!"));
-  await Course.findByIdAndDelete(id, req.body);
-  return sendResult(res, undefined);
+  if (index === -1) return next(new AppError("Course not found!", 404));
+  const updatedCourse = await Course.findByIdAndUpdate(id, newCourse, {
+    new: true,
+    runValidators: status,
+  });
+  return sendResult(res, updatedCourse);
 });
 
 const deleteTaughtCourse = catchAsyncMiddle(async function (
@@ -81,11 +90,15 @@ const deleteTaughtCourse = catchAsyncMiddle(async function (
     (c) => c._id.toString() === id
   );
   if (index === -1)
-    return next(new AppError("Course not found in taughtCourses!"));
+    return next(new AppError("Course not found in taughtCourses!", 404));
+
   req.user.taughtCourses.splice(index, 1);
+  req.user.archivedTaughtCourses.push({ _id: id });
   await req.user.save();
-  const result = await Course.findByIdAndDelete(id);
-  // if (!result) return next(new AppError("Course not found courses!"));
+
+  const course = await Course.findById(id);
+  course.isRemoved = true;
+
   return sendResult(res, undefined);
 });
 
@@ -94,21 +107,53 @@ const getTaughtCourse = catchAsyncMiddle(async function (
   res = ets.response,
   next
 ) {
-  const { id } = req.body;
+  const { id } = req.params;
   const index = req.user.taughtCourses.findIndex(
     (c) => c._id.toString() === id
   );
   if (index === -1)
-    return next(new AppError("Course not found in taughtCourses!"));
-
-  const course = await req.user.populate("taughtCourses")[index];
+    return next(new AppError("Course not found in taughtCourses!", 404));
+  const course = (await req.user.populate("taughtCourses")).taughtCourses[
+    index
+  ];
+  console.log(course);
   sendResult(res, course);
 });
 
+const youtubePlaylistExtractor = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response,
+  next
+) {
+  let { url, from, to } = req.body;
+  [from, to] = [parseInt(from) || 1, parseInt(to)];
+
+  console.log(from, to);
+
+  try {
+    const data = await playlistInfo(url, {});
+
+    if (from > data.videos.length) {
+      return next(
+        new AppError("The start is bigger than playlist length!", 404)
+      );
+    }
+    let results = {
+      ...data,
+      videos: [...(data.videos || [])].slice(from - 1, to ? to : undefined),
+    };
+    return sendResult(res, results);
+  } catch (error) {
+    console.log("youtubePlaylistExtractor err:", error);
+    return next(new AppError("Failed to extract url!", 404));
+  }
+});
+
 module.exports = {
-  getTaughtCourses,
+  getAllTaughtCourses,
   createCourse,
   updateTaughtCourse,
   deleteTaughtCourse,
   getTaughtCourse,
+  youtubePlaylistExtractor,
 };
