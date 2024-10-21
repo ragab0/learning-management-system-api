@@ -25,6 +25,20 @@ mentorSchema.methods.getBasicInfo = function () {
   return filteredInfo;
 };
 
+mentorSchema.methods.getPublicBasicInfo = function () {
+  const {
+    taughtCourses,
+    password,
+    __t,
+    __v,
+    email,
+    archivedTaughtCourses,
+    role,
+    ...filteredInfo
+  } = this.toObject();
+  return filteredInfo;
+};
+
 const Mentor = User.discriminator("Mentor", mentorSchema);
 
 // const topMentors = Mentor.aggregate([

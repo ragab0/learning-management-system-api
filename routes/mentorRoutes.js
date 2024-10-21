@@ -5,6 +5,9 @@ const mentorControllers = require("../controllers/mentorControllers");
 const reviewRoutes = require("../routes/reviewRoutes");
 
 const router = ets.Router();
+
+router.route("/profile/:id").get(mentorControllers.getPublicBasicInfo);
+
 router.use(authControllers.protect);
 
 router
@@ -34,10 +37,7 @@ router.use("/reviews", reviewRoutes);
 /**
  * 01) basic mentor ifno (profile)
  */
-router
-  .route("/profile")
-  .get(userHandlers.getBasicInfoOf("mentor"))
-  .put(userHandlers.updateBasicInfoOf("mentor"));
+router.route("/profile").put(userHandlers.updateBasicInfoOf("mentor"));
 
 /**
  * 02) routing the mentor courses

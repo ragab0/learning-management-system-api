@@ -18,20 +18,30 @@ const { playlistInfo } = require("youtube-ext");
  *
  */
 
+const getPublicBasicInfo = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response,
+  next
+) {
+  const { id } = req.params;
+  const result = (await Mentor.findById(id)).getPublicBasicInfo();
+  sendResult(res, result);
+});
+
 const getTopMentors = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response
 ) {
-  const topMentors = Mentor.aggregate([
-    {
-      $project: {
-        name: 1, // Include any other fields you want in the result
-        numberOfCourses: { $size: "$taughtCourses" }, // Calculate the number of created courses
-      },
+  const topMentors = await Mentor.find({
+    _id: {
+      $in: [
+        "6713f76a0b796587d1b708eb",
+        "67145ddfa1aac9da26edfab0",
+        "67145978a1aac9da26edfa70",
+      ],
     },
-    { $sort: { numberOfCourses: -1 } }, // Sort mentors by the number of courses in descending order
-    { $limit: 10 }, // Limit to top 10 mentors
-  ]);
+  }).select("fname lname headline title photo");
+  sendResults(res, topMentors);
 });
 
 /** Taught courses [getAll, create, update, and delete one] */
@@ -50,7 +60,7 @@ const createCourse = catchAsyncMiddle(async function (
   res = ets.response,
   next
 ) {
-  const newCourse = new Course(req.body);
+  const newCourse = new Course({ mentor: req.user._id, ...req.body });
   const course = await newCourse.save({
     validateBeforeSave: false,
   });
@@ -68,6 +78,7 @@ const updateTaughtCourse = catchAsyncMiddle(async function (
   // updating populated data doesn't affect the real reference;
   const { newCourse } = req.body;
   const { id, status } = newCourse;
+  newCourse.mentor = newCourse.mentor || req.user._id; // for old courses;
 
   const index = req.user.taughtCourses.findIndex(
     (c) => c._id.toString() === id
@@ -96,8 +107,14 @@ const deleteTaughtCourse = catchAsyncMiddle(async function (
   req.user.archivedTaughtCourses.push({ _id: id });
   await req.user.save();
 
-  const course = await Course.findById(id);
-  course.isRemoved = true;
+  const course = await Course.findByIdAndUpdate(
+    id,
+    { isRemoved: true },
+    {
+      runValidators: false,
+    }
+  );
+  if (!course) return next(new AppError("Course is already removed!", 404));
 
   return sendResult(res, undefined);
 });
@@ -150,6 +167,8 @@ const youtubePlaylistExtractor = catchAsyncMiddle(async function (
 });
 
 module.exports = {
+  getTopMentors,
+  getPublicBasicInfo,
   getAllTaughtCourses,
   createCourse,
   updateTaughtCourse,

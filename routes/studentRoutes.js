@@ -73,6 +73,10 @@ router
     authControllers.assignableTo("student", "admin"),
     studentControllers.getArchivedCourses
   )
+  .post(
+    authControllers.assignableTo("student", "admin"),
+    studentControllers.archiveEnrolledCourse
+  )
   .put(
     authControllers.assignableTo("student", "admin"),
     studentControllers.unArchiveCourse
@@ -130,7 +134,7 @@ router
  * 03) routing the student teachers routes
  */
 
-router.route("/teachers").get(studentControllers.getAssignedTeachers);
+router.route("/mentors").get(studentControllers.getAssignedTeachers);
 
 /**
  * 04) routing the student chats routes

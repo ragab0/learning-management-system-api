@@ -11,10 +11,11 @@ const lessonSchema = new mongoose.Schema({
     default: null,
     required: [true, "A lesson must have a video source"],
   },
+  duration: Object,
 });
 
 const moduleSchema = new mongoose.Schema({
-  // extractor: String,
+  extractor: String,
   thumbnail: String,
   description: {
     type: String,
@@ -47,6 +48,7 @@ const courseSchema = new mongoose.Schema(
     mentor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Mentor",
+      default: null,
       required: [true, "A course must be assigned to a mentor"],
     },
     title: {

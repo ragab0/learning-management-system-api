@@ -28,7 +28,7 @@ const studentSchema = new mongoose.Schema({
         ref: "Course",
       },
       progress: progressSchema,
-      isFav: {
+      isArchived: {
         type: Boolean,
         default: false,
       },

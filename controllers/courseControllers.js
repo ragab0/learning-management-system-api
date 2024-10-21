@@ -4,12 +4,39 @@ const Course = require("../models/courseModel");
 const AppError = require("../utils/appError");
 const { sendResults, sendResult } = require("./handlers/send");
 
+const getTopCourses = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response
+) {
+  const topCourses = await Course.find({
+    _id: {
+      $in: [
+        "67140d024eea75fbf7f4f15d",
+        "6714658ca1aac9da26edfad1",
+        "67147555a1aac9da26ee06b1",
+      ],
+    },
+  }).populate({
+    path: "mentor",
+    select: "fname lname photo headline",
+  });
+  sendResults(res, topCourses);
+});
+
 const getCourses = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response
 ) {
   let query;
-  let { page, pageSize, rates, modules, prices, sortBy } = req.query;
+  let {
+    page,
+    pageSize,
+    rate,
+    chapter: modules,
+    price,
+    sortBy,
+    catg,
+  } = req.query;
   // 01) pagination options:
   page = parseInt(req.query.page) || 1;
   pageSize = parseInt(req.query.pageSize) || 10;
@@ -18,8 +45,9 @@ const getCourses = catchAsyncMiddle(async function (
   // 02) filter:
   const filterConditions = {
     isRemoved: false,
+    status: true,
   };
-  if (rates) filterConditions.rates = { $in: rates.split(",").map(Number) };
+  if (rate) filterConditions.rate = { $in: rate.split(",").map(Number) };
   if (modules)
     filterConditions.numberOfModules = {
       $in: modules.split(",").map((range) => {
@@ -28,9 +56,9 @@ const getCourses = catchAsyncMiddle(async function (
         return { $gte: min };
       }),
     };
-  if (prices)
+  if (price)
     filterConditions.price = {
-      $in: prices.split(",").map((range) => {
+      $in: price.split(",").map((range) => {
         const [min, max] = range.split("-").map(Number);
         if (max) return { $gte: min, $lte: max };
         return { $gte: min };
@@ -51,23 +79,18 @@ const getCourses = catchAsyncMiddle(async function (
 
   // Execute our query && get the total numbers;
   const courses = await Course.find(filterConditions)
+    .populate({
+      path: "mentor",
+      select: "fname lname photo headline",
+    })
     .sort(sortCriteria)
     .skip(skipCount)
     .limit(pageSize);
-  const totalCourses = await Course.countDocuments();
+  const totalCourses = await Course.countDocuments({
+    isRemoved: { $ne: true },
+  });
   const totalPages = Math.ceil(totalCourses / pageSize);
   sendResults(res, courses, page, totalPages);
-});
-
-const getTopCourses = catchAsyncMiddle(async function (
-  req = ets.request,
-  res = ets.response,
-  next
-) {
-  req.query.page = req.query.page || 1;
-  req.query.pageSize = req.query.pageSize || 8;
-  req.query.sortBy = "top";
-  return getCourses(req, res);
 });
 
 const getCourse = catchAsyncMiddle(async function (
@@ -76,57 +99,62 @@ const getCourse = catchAsyncMiddle(async function (
   next
 ) {
   const { courseId } = req.params;
-  const course = await Course.findById(courseId);
+  const course = await Course.findById(courseId).populate({
+    path: "mentor",
+    select: "fname lname photo headline",
+  });
   if (!course) return next(new AppError("Course isn't exist!", 404));
   else if (course.isRemoved)
     return next(new AppError("Course is archived!", 404));
   sendResult(res, course);
 });
 
-const createCourse = catchAsyncMiddle(async function (
-  req = ets.request,
-  res = ets.response
-) {
-  const course = await Course.create({ mentor: req.user._id, ...req.body });
-  req.user.taughtCourses.push(course._id);
-  await req.user.save();
-  sendResult(res, course);
-});
+// const createCourse = catchAsyncMiddle(async function (
+//   req = ets.request,
+//   res = ets.response
+// ) {
+//   console.log(req.user);
 
-const updateCourse = catchAsyncMiddle(async function (
-  req = ets.request,
-  res = ets.response,
-  next
-) {
-  const { courseId } = req.params;
-  const { id } = req.body;
-  const course = await Course.findByIdAndUpdate(courseId || id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+//   const course = await Course.create({ mentor: req.user._id, ...req.body });
+//   req.user.taughtCourses.push(course._id);
+//   await req.user.save();
+//   sendResult(res, course);
+// });
 
-  if (!course) return next(new AppError("Course isn't exist!", 404));
-  sendResult(res, course);
-});
+// const updateCourse = catchAsyncMiddle(async function (
+//   req = ets.request,
+//   res = ets.response,
+//   next
+// ) {
+//   const { courseId } = req.params;
+//   const { id } = req.body;
+//   const course = await Course.findByIdAndUpdate(courseId || id, req.body, {
+//     new: true,
+//     runValidators: true,
+//   });
 
-const deleteCourse = catchAsyncMiddle(async function (
-  req = ets.request,
-  res = ets.response,
-  next
-) {
-  const { courseId } = req.params;
-  const { id } = req.body;
-  const course = await Course.findByIdAndDelete(courseId || id);
+//   if (!course) return next(new AppError("Course isn't exist!", 404));
+//   sendResult(res, course);
+// });
 
-  if (!course) return next(new AppError("Course isn't exist!", 404));
-  sendResult(res);
-});
+// const deleteCourse = catchAsyncMiddle(async function (
+//   req = ets.request,
+//   res = ets.response,
+//   next
+// ) {
+//   const { courseId } = req.params;
+//   const { id } = req.body;
+//   const course = await Course.findByIdAndDelete(courseId || id);
+
+//   if (!course) return next(new AppError("Course isn't exist!", 404));
+//   sendResult(res);
+// });
 
 module.exports = {
   getCourses,
   getTopCourses,
-  createCourse,
   getCourse,
-  updateCourse,
-  deleteCourse,
+  // createCourse,
+  // updateCourse,
+  // deleteCourse,
 };

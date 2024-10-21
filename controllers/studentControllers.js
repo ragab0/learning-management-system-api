@@ -33,7 +33,7 @@ function getStudentCourses(arrField) {
       populate: {
         path: "mentor",
         model: "Mentor",
-        select: "fname lname",
+        select: "fname lname headline photo",
       },
     });
 
@@ -85,7 +85,7 @@ const archiveEnrolledCourse = catchAsyncMiddle(async function (
     return next(new AppError("Course not found in enrolled courses!", 404));
 
   const result = req.user.enrolledCourses.splice(index, 1);
-  req.user.archivedCourses.push(result);
+  req.user.archivedCourses.push({ _id: id });
   await req.user.save();
   sendResult(res, undefined);
 });
@@ -117,14 +117,16 @@ const unArchiveCourse = catchAsyncMiddle(async function (
   next
 ) {
   const { id } = req.body;
+  console.log("###################", id);
+
   const index = req.user.archivedCourses.findIndex(
     (e) => e && e._id.equals(id)
   );
   if (index === -1)
     return next(new AppError("Course not found in archived courses!", 404));
 
-  const result = req.user.archivedCourses.splice[(index, 1)];
-  req.user.enrolledCourses.push(result);
+  const result = req.user.archivedCourses.splice(index, 1);
+  req.user.enrolledCourses.push({ _id: id });
   await req.user.save();
   sendResult(res, undefined);
 });
@@ -259,9 +261,33 @@ const getAssignedTeachers = catchAsyncMiddle(async function (
   res = ets.response,
   next
 ) {
-  const index = req.user.wishCourses.findIndex((e) => e && e._id.equals(id));
-  if (index === -1)
-    return next(new AppError("Course not found in wishlist!", 404));
+  // const mentors = (await req.user.enrolledCourses.populate("_id"))
+  //   .enrolledCourses;
+
+  const populatedResults = await req.user.populate({
+    path: `enrolledCourses._id archivedCourses._id`,
+    model: "Course",
+    populate: {
+      path: "mentor",
+      model: "Mentor",
+      select: "fname lname headline photo",
+    },
+  });
+
+  const mentors = [
+    ...populatedResults.enrolledCourses,
+    ...populatedResults.archivedCourses,
+  ]
+    .map(({ _id: course }) => course.mentor)
+    .filter(
+      (mentor, index, self) =>
+        index === self.findIndex((m) => m._id === mentor._id)
+    );
+
+  const uniqueMentors = Array.from(
+    new Map(mentors.map((item) => [item._id.toString(), item])).values()
+  );
+  sendResults(res, uniqueMentors);
 });
 
 module.exports = {
