@@ -2,6 +2,7 @@ const ets = require("express");
 const catchAsyncMiddle = require("../../utils/catchAsyncMiddle");
 const Student = require("../../models/users/studentModel");
 const Mentor = require("../../models/users/mentorModel");
+const { sendResults } = require("./send");
 
 const collections = {
   student: Student,
@@ -48,11 +49,7 @@ class UserControllers {
       res = ets.response
     ) {
       const users = await collections[role].find();
-      res.status(200).json({
-        status: "success",
-        results: users.length,
-        data: users,
-      });
+      sendResults(res, users);
     });
   }
 
@@ -62,10 +59,7 @@ class UserControllers {
       res = ets.response
     ) {
       const user = await collections[role].findOneById(req.params.id);
-      res.status(200).json({
-        status: "success",
-        data: user,
-      });
+      sendResults(res, user);
     });
   }
 

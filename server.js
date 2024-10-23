@@ -12,10 +12,6 @@ connectDatabase();
  * configuring && running our app:
  *
  */
-app.listen(
-  PORT,
-  NODE_PLATFORM === "heroku" ? "0.0.0.0" : "localhost",
-  function () {
-    console.log("Server is running on", PORT);
-  }
-);
+app.listen(PORT, NODE_PLATFORM === "localhost" ? "localhost" : "", function () {
+  console.log("Server is running on", PORT);
+});
