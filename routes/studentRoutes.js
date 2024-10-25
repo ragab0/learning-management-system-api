@@ -11,19 +11,19 @@ router
   .route("/")
   .get(
     authControllers.assignableTo("admin"),
-    userHandlers.getAllUsersOfRole("student")
+    userHandlers.getAllUsersOf("student")
   )
   .post(
     authControllers.assignableTo("admin"),
-    userHandlers.createUserOfRole("student")
+    userHandlers.createUserOf("student")
   )
   .put(
     authControllers.assignableTo("admin"),
-    userHandlers.updateUserOfRole("student")
+    userHandlers.updateUserOf("student")
   )
   .delete(
     authControllers.assignableTo("admin"),
-    userHandlers.deleteUserOfRole("student")
+    userHandlers.deleteUserOf("student")
   );
 
 /**
@@ -40,7 +40,8 @@ router
   .put(userHandlers.updateBasicInfoOf("student"));
 
 /**
- * 02) routing the student courses routes [enrolled, enrolledContent, archived, cart, wishlist]
+ * 02) routing the student courses routes [enrolled, archived, cart, wishlist, baughtCourseContent]
+ *
  */
 
 // enrolled;
@@ -63,7 +64,7 @@ router
   .route("/courses/study")
   .get(
     authControllers.assignableTo("student", "admin"),
-    studentControllers.getOwnCourseContent
+    studentControllers.getBaughtCourseContent
   );
 
 // archived;
@@ -114,12 +115,18 @@ router
     studentControllers.removeWishlistCourse
   );
 
-// enrolled content;
+// enrolled course full content && progress;
 router
   .route("/courses/:courseId")
   .get(
     authControllers.assignableTo("student", "admin"),
-    studentControllers.getOwnCourseContent
+    studentControllers.getBaughtCourseContent
+  );
+router
+  .route("/courses/:courseId/progress")
+  .post(
+    authControllers.assignableTo("student", "admin"),
+    studentControllers.updateBaughtCourseProgress
   );
 
 // checkout card courses

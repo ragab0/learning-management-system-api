@@ -6,6 +6,7 @@ const Student = require("../models/users/studentModel");
 const Mentor = require("../models/users/mentorModel");
 const Admin = require("../models/users/adminModel");
 const dotenv = require("dotenv");
+const { sendResult } = require("./handlers/send");
 
 dotenv.config({ path: ".env" });
 const { JWT_SECRET, JWT_EXPIRES_IN, NODE_ENV } = process.env;
@@ -34,14 +35,7 @@ function signToken(user = {}) {
   });
 }
 
-function sendUser(res, statusCode, user) {
-  res.status(statusCode).json({
-    status: "success",
-    user: user.getBasicInfo(),
-  });
-}
-
-function sendCredintialsUser(res, statusCode, token, user) {
+function sendCredintialsUser(res, statusCode, token, basicInfo) {
   res.cookie(COOKIE_NAME, token, {
     expires: new Date(
       Date.now() + parseInt(JWT_EXPIRES_IN) * 24 * 60 * 60 * 1000
@@ -49,7 +43,7 @@ function sendCredintialsUser(res, statusCode, token, user) {
     secure: NODE_ENV !== "development",
     httpOnly: true,
   });
-  sendUser(res, statusCode, user);
+  sendResult(res, basicInfo, statusCode);
 }
 
 /* AUTH 00 / 02; */
@@ -62,7 +56,7 @@ const signup = catchAsyncMiddle(async function (req, res, next) {
 
   // 02) siggning him to a valid token && sending it back as our final res
   const token = signToken(user);
-  sendCredintialsUser(res, 201, token, user);
+  sendCredintialsUser(res, 201, token, user.getBasicInfo());
 });
 
 /* AUTH 01 / 02; */
@@ -95,14 +89,14 @@ const login = catchAsyncMiddle(async function (
 
   // 04) Finally, signing a valid JWT && send it back as a res;
   const token = signToken(user);
-  sendCredintialsUser(res, 201, token, user);
+  sendCredintialsUser(res, 201, token, user.getBasicInfo());
 });
 
 const isLogin = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response
 ) {
-  sendUser(res, 200, req.user);
+  sendResult(res, req.user.getBasicInfo());
 });
 
 /* AUTH 02 / 02 */

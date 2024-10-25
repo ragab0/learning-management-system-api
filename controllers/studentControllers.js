@@ -1,10 +1,7 @@
 const ets = require("express");
 const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
-const Student = require("../models/users/studentModel");
-const Mentor = require("../models/users/mentorModel");
 const { sendResult, sendResults } = require("./handlers/send");
 const AppError = require("../utils/appError");
-const { populate } = require("../models/courseModel");
 const Course = require("../models/courseModel");
 
 /**
@@ -84,30 +81,68 @@ const archiveEnrolledCourse = catchAsyncMiddle(async function (
   if (index === -1)
     return next(new AppError("Course not found in enrolled courses!", 404));
 
-  const result = req.user.enrolledCourses.splice(index, 1);
-  req.user.archivedCourses.push({ _id: id });
+  const result = req.user.enrolledCourses.splice(index, 1)?.at(0);
+
+  req.user.archivedCourses.push(result);
   await req.user.save();
   sendResult(res, undefined);
 });
 
-const getOwnCourseContent = catchAsyncMiddle(async function (
+const getBaughtCourseContent = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
   next
 ) {
-  let { id } = req.body;
-  const result =
-    (await req.user.populate("enrolledCourses")).enrolledCourses.find(
-      (e) => e && e._id.equals(id)
-    ) ||
-    (await req.user.populate("archivedCourses")).archivedCourses.find(
-      (e) => e && e._id.equals(id)
-    );
+  let { courseId: id } = req.params;
+
+  let populatedResult = await req.user.populate([
+    {
+      path: "enrolledCourses._id",
+      model: "Course",
+      populate: {
+        path: "mentor",
+        model: "Mentor",
+        select: "fname lname photo headline",
+      },
+    },
+    {
+      path: "archivedCourses._id",
+      model: "Course",
+      populate: {
+        path: "mentor",
+        model: "Mentor",
+        select: "fname lname photo headline description headline",
+      },
+    },
+  ]);
+
+  let result = [
+    ...populatedResult.enrolledCourses,
+    ...populatedResult.archivedCourses,
+  ].find((e) => e && e._id.equals(id));
   if (!result) return next(new AppError("Buy first to get access!", 404));
 
-  console.log("RRRRRRRRRRRRRRR:", result);
-
   sendResult(res, result);
+});
+
+const updateBaughtCourseProgress = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response,
+  next
+) {
+  let { courseId: id } = req.params;
+  let { progress } = req.body;
+
+  let index1 = req.user.enrolledCourses.findIndex((e) => e && e._id.equals(id));
+  let index2 = req.user.archivedCourses.findIndex((e) => e && e._id.equals(id));
+  if (!index1 || !index2)
+    return next(new AppError("Course has been deleted!", 404));
+
+  if (index1) req.user.enrolledCourses[index1].progress = progress;
+  else req.user.archivedCourses[index2].progress = progress;
+
+  await req.user.save();
+  sendResult(res, undefined, 200);
 });
 
 /******************** StudentArchivedCoursesControllers: ********************/
@@ -117,7 +152,6 @@ const unArchiveCourse = catchAsyncMiddle(async function (
   next
 ) {
   const { id } = req.body;
-  console.log("###################", id);
 
   const index = req.user.archivedCourses.findIndex(
     (e) => e && e._id.equals(id)
@@ -125,8 +159,8 @@ const unArchiveCourse = catchAsyncMiddle(async function (
   if (index === -1)
     return next(new AppError("Course not found in archived courses!", 404));
 
-  const result = req.user.archivedCourses.splice(index, 1);
-  req.user.enrolledCourses.push({ _id: id });
+  const result = req.user.archivedCourses.splice(index, 1)?.at(0);
+  req.user.enrolledCourses.push(result);
   await req.user.save();
   sendResult(res, undefined);
 });
@@ -294,7 +328,8 @@ module.exports = {
   getEnrolledCourses,
   enrollNewCourse,
   archiveEnrolledCourse,
-  getOwnCourseContent,
+  getBaughtCourseContent,
+  updateBaughtCourseProgress,
   checkout,
 
   getArchivedCourses,

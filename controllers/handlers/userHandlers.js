@@ -2,48 +2,43 @@ const ets = require("express");
 const catchAsyncMiddle = require("../../utils/catchAsyncMiddle");
 const Student = require("../../models/users/studentModel");
 const Mentor = require("../../models/users/mentorModel");
-const { sendResults } = require("./send");
+const { sendResults, sendResult } = require("./send");
 
 const collections = {
   student: Student,
   mentor: Mentor,
 };
+
 class UserControllers {
+  /** BASIC info of */
   static getBasicInfoOf(role) {
     return catchAsyncMiddle(async function (
       req = ets.request,
-      res = ets.response,
-      next
+      res = ets.response
     ) {
       const result = (
         await collections[role].findById(req.user._id)
       ).getBasicInfo();
-      res.status(200).json({
-        status: "success",
-        result,
-      });
+      sendResult(res, result);
     });
   }
 
   static updateBasicInfoOf(role) {
     return catchAsyncMiddle(async function (
       req = ets.request,
-      res = ets.response,
-      next
+      res = ets.response
     ) {
       const result = await collections[role].findByIdAndUpdate(
         req.user._id,
         req.body,
         { runValidators: true, new: true }
       );
-      res.status(201).json({
-        status: "success",
-        user: result,
-      });
+      sendResult(res, result, 201);
     });
   }
 
-  static getAllUsersOfRole(role) {
+  /* All info of */
+  static getAllUsersOf(role) {
     return catchAsyncMiddle(async function (
       req = ets.request,
       res = ets.response
@@ -53,7 +48,7 @@ class UserControllers {
     });
   }
 
-  static getUserOfRole(role) {
+  static getUserOf(role) {
     return catchAsyncMiddle(async function (
       req = ets.request,
       res = ets.response
@@ -63,7 +58,7 @@ class UserControllers {
     });
   }
 
-  static createUserOfRole(role) {
+  static createUserOf(role) {
     return catchAsyncMiddle(async function (
       req = ets.request,
       res = ets.response
@@ -76,7 +71,7 @@ class UserControllers {
     });
   }
 
-  static updateUserOfRole(role) {
+  static updateUserOf(role) {
     return catchAsyncMiddle(async function (
       req = ets.request,
       res = ets.response
@@ -92,7 +87,7 @@ class UserControllers {
     });
   }
 
-  static deleteUserOfRole(role) {
+  static deleteUserOf(role) {
     return catchAsyncMiddle(async function (
       req = ets.request,
       res = ets.response

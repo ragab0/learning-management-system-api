@@ -2,9 +2,8 @@ const ets = require("express");
 const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
 const Mentor = require("../models/users/mentorModel");
 const Course = require("../models/courseModel");
-const { sendResults, sendResult } = require("./handlers/send");
 const AppError = require("../utils/appError");
-const { getYoutubePlaylistId } = require("youtube-ext/dist/utils");
+const { sendResults, sendResult } = require("./handlers/send");
 const { playlistInfo } = require("youtube-ext");
 // const youtubePlaylist = require("youtube-playlist");
 

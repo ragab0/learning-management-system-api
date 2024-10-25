@@ -8,8 +8,8 @@ function sendResults(res, results, page, totalPages) {
   });
 }
 
-function sendResult(res, result) {
-  res.status(result ? 200 : 204).json({
+function sendResult(res, result, statusCode) {
+  res.status(statusCode || result ? 200 : 204).json({
     status: "success",
     result,
   });

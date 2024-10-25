@@ -4,20 +4,11 @@ const catchAsyncMiddle = require("../../utils/catchAsyncMiddle");
 const AppError = require("../../utils/appError");
 
 const progressSchema = new mongoose.Schema({
-  contentProgress: [
-    {
-      module: { type: mongoose.Schema.Types.ObjectId },
-      isCompleted: { type: Boolean, default: false },
-      completedLessons: [
-        {
-          lesson: { type: mongoose.Schema.Types.ObjectId },
-          isCompleted: { type: Boolean, default: false },
-          completedAt: Date,
-        },
-      ],
-    },
-  ],
-  completedAt: Date,
+  type: Object,
+  of: {
+    type: Object,
+    of: Boolean,
+  },
 });
 
 const studentSchema = new mongoose.Schema({
@@ -27,11 +18,7 @@ const studentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
       },
-      progress: progressSchema,
-      isArchived: {
-        type: Boolean,
-        default: false,
-      },
+      progress: Object,
       addedAt: { type: Date, default: Date.now() },
     },
   ],
@@ -40,6 +27,10 @@ const studentSchema = new mongoose.Schema({
       course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
+      },
+      progress: {
+        type: Map,
+        of: progressSchema,
       },
       addedAt: { type: Date, default: Date.now() },
     },

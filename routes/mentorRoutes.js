@@ -14,19 +14,19 @@ router
   .route("/")
   .get(
     authControllers.assignableTo("admin"),
-    userHandlers.getAllUsersOfRole("mentor")
+    userHandlers.getAllUsersOf("mentor")
   )
   .post(
     authControllers.assignableTo("admin"),
-    userHandlers.createUserOfRole("mentor")
+    userHandlers.createUserOf("mentor")
   )
   .put(
     authControllers.assignableTo("admin"),
-    userHandlers.updateUserOfRole("mentor")
+    userHandlers.updateUserOf("mentor")
   )
   .delete(
     authControllers.assignableTo("admin"),
-    userHandlers.deleteUserOfRole("mentor")
+    userHandlers.deleteUserOf("mentor")
   );
 
 /**
