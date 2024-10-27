@@ -102,7 +102,7 @@ const getBaughtCourseContent = catchAsyncMiddle(async function (
       populate: {
         path: "mentor",
         model: "Mentor",
-        select: "fname lname photo headline",
+        select: "fname lname photo headline description",
       },
     },
     {
@@ -111,7 +111,7 @@ const getBaughtCourseContent = catchAsyncMiddle(async function (
       populate: {
         path: "mentor",
         model: "Mentor",
-        select: "fname lname photo headline description headline",
+        select: "fname lname photo headline description",
       },
     },
   ]);
