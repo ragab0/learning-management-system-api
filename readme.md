@@ -6,11 +6,9 @@ A robust backend API for a Learning Management System built with Node.js and Exp
 
 ### 🔄 Use Case Diagram
 
-![Use Case Diagram](./private/use_cases.svg)
+![Use Case Diagram](./private/lms-use-cases-diagram-V02.svg)
 
-## 📊 Database Schema
-
-### 🔄 ER Diagram
+### 🔄 ER Diagram for Database Schema
 
 ![ERD Diagram](./private/lms-class-V07.svg)
 
