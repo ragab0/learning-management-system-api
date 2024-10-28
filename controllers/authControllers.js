@@ -42,6 +42,7 @@ function sendCredintialsUser(res, statusCode, token, basicInfo) {
     ),
     secure: NODE_ENV !== "development",
     httpOnly: true,
+    sameSite: "None",
   });
   sendResult(res, basicInfo, statusCode);
 }
@@ -105,7 +106,10 @@ const protect = catchAsyncMiddle(async function (
   res = ets.response,
   next
 ) {
-  console.log("protect middlware...", req.cookies[COOKIE_NAME]);
+  console.log(
+    "protect middlware & coming cookie is:",
+    req.cookies[COOKIE_NAME]
+  );
 
   // 01) checking if the user is loged in - is authonticated - the token is provided with http req header;
   let token;
