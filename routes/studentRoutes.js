@@ -2,10 +2,14 @@ const ets = require("express");
 const authControllers = require("../controllers/authControllers");
 const userHandlers = require("../controllers/handlers/userHandlers");
 const studentControllers = require("../controllers/studentControllers");
-const reviewRoutes = require("./reviewRoutes");
 
 const router = ets.Router();
+
 router.use(authControllers.protect);
+
+/**
+ * 00) mutating the review routes;
+ */
 
 router
   .route("/")
@@ -25,11 +29,6 @@ router
     authControllers.assignableTo("admin"),
     userHandlers.deleteUserOf("student")
   );
-
-/**
- * 00) mutating the review routes;
- */
-router.use("/reviews", reviewRoutes);
 
 /**
  * 01) basic student ifno (profile)

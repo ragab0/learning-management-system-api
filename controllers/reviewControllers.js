@@ -1,27 +1,69 @@
 const ets = require("express");
 const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
+const Review = require("../models/reviewModel");
+const { sendResult, sendResults } = require("./handlers/send");
 
-// used with nested routes of [courseId,studentId,mentorId, admin];
-const getAllReviewsOf = catchAsyncMiddle(async function (
+const getAllReviewsOfCourse = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response
+) {
+  const filter = { course: req.params.courseId };
+  const reviews = await Review.find(filter);
+  sendResults(res, reviews);
+});
+
+const getAllReviewsOfMentor = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response
+) {
+  const filter = { mentor: req.user._id };
+  const reviews = await Review.find(filter);
+  sendResults(res, reviews);
+});
+
+const getAllReviewsOfStudent = catchAsyncMiddle(async function (
+  req = ets.request,
+  res = ets.response
+) {
+  const filter = { student: req.user._id };
+  const reviews = await Review.find(filter);
+  sendResults(res, reviews);
+});
+
+const addReview = catchAsyncMiddle(async function (
   req = ets.request,
   res = ets.response,
   next
 ) {
-  console.log(req.params);
-  if (req.params.studentId) {
-  } else if (req.params.mentorId) {
-  } else if (req.params.courseId) {
-  } else if (req.user.role === "admin") {
-  }
+  let index1 = req.user.enrolledCourses.findIndex(
+    (e) => e && e._id.equals(req.body.course)
+  );
+  let index2 = req.user.archivedCourses.findIndex(
+    (e) => e && e._id.equals(req.body.course)
+  );
+  if (!index1 || !index2)
+    return next(
+      new AppError("don't play with data bro, course isn't yours!", 404)
+    );
+
+  const result = await Review.findOneAndUpdate(
+    { student: req.user._id, course: req.body.course },
+    { ...req.body, student: req.user._id },
+    {
+      upsert: true,
+      new: true,
+      runValidators: true,
+    }
+  );
+  sendResult(res, result);
 });
 
-const addReview = function () {};
-const updateReview = function () {};
 const deleteReview = function () {};
 
 module.exports = {
-  getAllReviewsOf,
+  getAllReviewsOfCourse,
+  getAllReviewsOfMentor,
+  getAllReviewsOfStudent,
   addReview,
-  updateReview,
   deleteReview,
 };

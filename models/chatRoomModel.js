@@ -12,10 +12,6 @@ const chatRoomSchema = {
   messages: [
     {
       sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      contentType: {
-        type: String,
-        enum: ["text", "image", "file"],
-      },
       isRead: { type: Boolean, default: false },
       content: { type: String, required: true },
       createdAt: { type: Date, default: Date.now() },
