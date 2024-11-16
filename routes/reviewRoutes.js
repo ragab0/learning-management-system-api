@@ -2,32 +2,21 @@ const express = require("express");
 const authControllers = require("../controllers/authControllers");
 const reviewController = require("../controllers/reviewControllers");
 
-/**
- * as a sub route they will inherit the authonticated from the base routes;
- */
-
 const router = express.Router();
 
-router
-  .route("/")
-  .post(authControllers.protect, reviewController.addReview)
-  .delete(authControllers.protect, reviewController.deleteReview);
+/** course reviews */
+router.route("/course/:courseId").get(reviewController.getAllReviewsOfCourse);
+/** mentor reviews */
+router.route("/mentor/:mentorId").get(reviewController.getAllReviewsOfMentor);
 
-router.route("/course/:courseId").get(reviewController.getAllReviewsOfCourse); // public
+/** student reviews */
+// get by cookie's ID not param user to prevent any user to get of another user;
+router.use(authControllers.protect, authControllers.assignableTo("student")); // not admin...
 
+router.route("/student").post(reviewController.addReview);
 router
-  .route("/mentor") // get by cookie's ID not param user to prevent any user to get of another user;
-  .get(
-    authControllers.protect,
-    authControllers.assignableTo("mentor"),
-    reviewController.getAllReviewsOfMentor
-  );
-router
-  .route("/student") // get by cookie's ID not param user to prevent any user to get of another user;
-  .get(
-    authControllers.protect,
-    authControllers.assignableTo("student"),
-    reviewController.getAllReviewsOfStudent
-  );
+  .route("/student/:courseId")
+  .get(reviewController.getReview)
+  .delete(reviewController.deleteReview);
 
 module.exports = router;
