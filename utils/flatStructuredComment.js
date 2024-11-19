@@ -1,7 +1,7 @@
 // a util helps me to gather together the all ids of a comment of its replies to delete all,
 // since the root one (parent) has been deleted;
 
-export function flatStructuredomment(comment, result = []) {
+module.exports = function flatStructuredomment(comment, result = []) {
   // add current's id
   result.push(comment._id);
 
@@ -11,4 +11,4 @@ export function flatStructuredomment(comment, result = []) {
   }
 
   return result.slice(1);
-}
+};

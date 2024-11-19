@@ -1,7 +1,7 @@
 // structure the comments hierarchically ...
 // instead of the aggreagtions AS the $function (to recursive our idea) method is not free;
 
-export function structureComments(coms) {
+module.exports = function structureComments(coms) {
   // saving in it the all root elements those his parent is null;
   // saving the REFERENCE of each comment into the map .. O(1);
   const tree = [];
@@ -36,4 +36,4 @@ export function structureComments(coms) {
   });
 
   return [tree, count, deletedNestedComments];
-}
+};
