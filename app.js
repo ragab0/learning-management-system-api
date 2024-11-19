@@ -14,6 +14,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const topRoutes = require("./routes/topRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const commentRoutes = require("./routes/commentRoutes");
 const logger = require("./controllers/handlers/logger");
 
 /** setup the app && middles && mutating the routes */
@@ -52,10 +53,16 @@ app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/top", topRoutes);
 app.use("/api/v1/courses", courseRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/comments", commentRoutes);
 
 /* 00) global catcher for handling/CATCHING the un-handled/un-mounted routes: */
 app.all("*", function (req, res, next) {
-  next(new AppError("Can't find on the server the: " + req.originalUrl, 404));
+  next(
+    new AppError(
+      `Can't find on the server the: (${req.method}) ${req.originalUrl}`,
+      404
+    )
+  );
 });
 
 /* 00) main error handler that will catch any error that will occur at our entire app either this error is: operation/none; */

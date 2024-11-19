@@ -93,6 +93,28 @@ const getReview = catchAsyncMiddle(async function (req, res, next) {
 });
 
 const deleteReview = catchAsyncMiddle(async function (req, res, next) {
+  // let user = await req.user.populate([
+  //   {
+  //     path: "enrolledCourses._id",
+  //     model: "Course",
+  //     select: "title mentor",
+  //   },
+  //   {
+  //     path: "archivedCourses._id",
+  //     model: "Course",
+  //     select: "title mentor",
+  //   },
+  // ]);
+
+  // let course =
+  //   user.enrolledCourses.find((e) => e && e._id.equals(req.params.courseId)) ||
+  //   user.archivedCourses.find((e) => e && e._id.equals(req.params.courseId));
+
+  // if (!course)
+  //   return next(
+  //     new AppError("don't play with data bro, course isn't yours!", 403)
+  //   );
+
   const review = await Review.findOneAndDelete({
     student: req.user._id,
     course: req.params.courseId,
