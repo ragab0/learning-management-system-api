@@ -7,6 +7,7 @@ const Mentor = require("../models/users/mentorModel");
 const Admin = require("../models/users/adminModel");
 const dotenv = require("dotenv");
 const { sendResult } = require("./handlers/send");
+const ChatRoom = require("../models/chatRoomModel");
 
 dotenv.config({ path: ".env" });
 const { JWT_SECRET, JWT_EXPIRES_IN, NODE_ENV } = process.env;
@@ -106,11 +107,6 @@ const protect = catchAsyncMiddle(async function (
   res = ets.response,
   next
 ) {
-  console.log(
-    "protect middlware & coming cookie is:",
-    req.cookies[COOKIE_NAME]
-  );
-
   // 01) checking if the user is loged in - is authonticated - the token is provided with http req header;
   let token;
 
@@ -144,6 +140,7 @@ const protect = catchAsyncMiddle(async function (
 
   // 05) finally pass the current user to the next middle (authorization/checkingPermissions);
   req.user = currentUser;
+
   next();
 });
 

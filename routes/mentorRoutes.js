@@ -3,12 +3,19 @@ const authControllers = require("../controllers/authControllers");
 const userHandlers = require("../controllers/handlers/userHandlers");
 const mentorControllers = require("../controllers/mentorControllers");
 const reviewRoutes = require("../routes/reviewRoutes");
+const chatRoutes = require("../routes/chatRoutesNested");
 
 const router = ets.Router();
 
 router.route("/profile/:id").get(mentorControllers.getPublicBasicInfo);
 
 router.use(authControllers.protect);
+
+/**
+ * 00) mutating the messages routes;
+ */
+
+router.use("/chats", chatRoutes);
 
 router
   .route("/")

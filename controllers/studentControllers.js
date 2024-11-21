@@ -3,6 +3,7 @@ const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
 const { sendResult, sendResults } = require("./handlers/send");
 const AppError = require("../utils/appError");
 const Course = require("../models/courseModel");
+const ChatRoom = require("../models/chatRoomModel");
 
 /**
  * Student [basic info (Profile), courses, teachers, messages, chats, reviews];
@@ -224,15 +225,46 @@ const checkout = catchAsyncMiddle(async function (
   if (req.user.cartCourses?.length <= 0) {
     return next(new AppError("Cart is empty!", 404));
   }
-
-  // payment FEATURE IS COMING...;
+  /* payment FEATURE IS COMING...; */
   req.user.enrolledCourses.push(...req.user.cartCourses);
 
-  await Course.updateMany(
-    { _id: { $in: req.user.cartCourses.splice(0) } },
-    { $inc: { totalStudents: 1 } }
+  /* open new chatRoom - populate courses to get mentor (secured, instead of getting it form the coming req) */
+  populatedUser = await req.user.populate({
+    path: "cartCourses._id",
+    model: "Course",
+    select: "title mentor",
+  });
+
+  const mentors = Array.from(
+    new Set(
+      populatedUser.cartCourses.map(({ _id: course }) =>
+        course.mentor.toString()
+      )
+    )
   );
 
+  const chats = mentors.map((m) => ({
+    student: req.user._id.toString(),
+    mentor: m,
+  }));
+
+  try {
+    await ChatRoom.insertMany(chats, { ordered: false });
+  } catch (error) {
+    console.error(
+      "Some rooms already exist or an error occurred:",
+      error.message
+    );
+  }
+
+  /* increase student totlal subscribed students */
+  // await Course.updateMany(
+  //   { _id: { $in: req.user.cartCourses } },
+  //   { $inc: { totalStudents: 1 } }
+  // );
+
+  /** empty & save the cart */
+  req.user.cartCourses.splice(0);
   await req.user.save();
   sendResult(res, undefined);
 });
@@ -321,7 +353,18 @@ const getAssignedTeachers = catchAsyncMiddle(async function (
   const uniqueMentors = Array.from(
     new Map(mentors.map((item) => [item._id.toString(), item])).values()
   );
-  sendResults(res, uniqueMentors);
+
+  // assign chat room id with the studnet;
+  const finalResult = await Promise.all(
+    uniqueMentors.map(async (m) => {
+      return {
+        ...m._doc,
+        chatId: (await ChatRoom.findOne({ mentor: m._id }))._id,
+      };
+    })
+  );
+
+  sendResults(res, finalResult);
 });
 
 module.exports = {

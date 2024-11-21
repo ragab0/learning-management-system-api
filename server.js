@@ -1,10 +1,16 @@
 const app = require("./app");
 const dotenv = require("dotenv");
 const connectDatabase = require("./configs/database");
-const ChatServer = require("socket.io").Server;
+const http = require("http");
+const { verify } = require("jsonwebtoken");
+const {
+  protectSocket,
+  handleNewMessageEvent,
+} = require("./controllers/socketControllers");
+const IoSocketServer = require("socket.io").Server;
 
 dotenv.config({ path: "./env" });
-const { PORT = 3500, NODE_PLATFORM } = process.env;
+const { PORT = 3500, NODE_PLATFORM, CHAT_PORT } = process.env;
 
 /** connect to the db */
 connectDatabase();
@@ -27,22 +33,46 @@ const appServer = app.listen(
  *
  */
 
-const io = new ChatServer(appServer, {
+const communicationServer = http.createServer(appServer);
+const io = new IoSocketServer(communicationServer, {
   cors: {
     origin: [
-      "http://localhost:3000", // dev !!!!!!!!!!!!!
-      "http://localhost:3001", // dev !!!!!!!!!!!!!
+      "http://localhost:3000", // dev !!!!!!!!!!!!
+      "http://localhost:3001", // dev !!!!!!!!!!!!
       "https://lms-depi-final-project.vercel.app",
     ],
-    // methods: ["GET", "POST"],
-    // credentials: true
+    credentials: true,
   },
+  cookie: true,
 });
 
+io.use(protectSocket);
 io.on("connection", function (socket) {
-  console.log(`User ${socket.id} connected...`);
-  socket.on("message", function (msg) {
-    console.log("User msg is:", msg);
-    io.emit("message", `${socket.id.substring(0, 5)}: ${msg}`);
+  console.log(`SocketServer: the user ${socket.id} connected...`);
+
+  socket.on("joinRoom", ({ roomId }) => {
+    console.log("joined:", roomId);
+    socket.rooms.clear();
+    socket.join(roomId);
   });
+  socket.on("joinLopyOfRooms", ({ roomIds }) => {
+    socket.rooms.clear();
+    socket.join(roomIds);
+  });
+  socket.on("newMessage", (msgData) =>
+    handleNewMessageEvent(socket, msgData, io)
+  );
+  socket.on("userStartTyping", (data) => {
+    socket.to(data.roomId).emit("userStartTyping", data);
+  });
+  socket.on("userStopedTyping", (data) => {
+    socket.to(data.roomId).emit("userStopedTyping", data);
+  });
+  socket.on("error", (error) => {
+    console.error("Socket error:", error.message);
+  });
+});
+
+communicationServer.listen(CHAT_PORT, () => {
+  console.log("communicationServer is running and listening on:", CHAT_PORT);
 });

@@ -2,13 +2,20 @@ const ets = require("express");
 const authControllers = require("../controllers/authControllers");
 const userHandlers = require("../controllers/handlers/userHandlers");
 const studentControllers = require("../controllers/studentControllers");
+const chatRoutes = require("./chatRoutesNested");
 
 const router = ets.Router();
 
 router.use(authControllers.protect);
 
 /**
- * 00) mutating the review routes;
+ * 00) mutating the messages routes;
+ */
+
+router.use("/chats", chatRoutes);
+
+/**
+ * 00) admin routes
  */
 
 router
@@ -141,12 +148,5 @@ router
  */
 
 router.route("/mentors").get(studentControllers.getAssignedTeachers);
-
-/**
- * 04) routing the student chats routes
- */
-
-// router.get("/chats",  studentController.getAllChates);
-// router.get("chats/:id",  studentController.getChat);
 
 module.exports = router;

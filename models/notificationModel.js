@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const notificationSchema = {
+const notificationSchema = new mongoose.Schema({
   sender: { type: mongoose.Schema.Types.ObjectId, ref: "Mentor" },
   recievers: [
     {
@@ -14,7 +14,7 @@ const notificationSchema = {
   },
   content: String,
   createdAt: Date,
-};
+});
 
 const Notification = mongoose.Model("Notification", notificationSchema);
 module.exports = Notification;

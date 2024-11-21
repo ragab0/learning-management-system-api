@@ -1,10 +1,10 @@
-function sendResults(res, results, page, totalPages, count = null) {
+function sendResults(res, results = [], page, totalPages, count = null) {
   res.status(200).json({
     status: "success",
     results,
     page,
     totalPages,
-    count: count || results?.length || 0,
+    count: count || results.length,
   });
 }
 
