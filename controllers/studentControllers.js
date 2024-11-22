@@ -359,7 +359,9 @@ const getAssignedTeachers = catchAsyncMiddle(async function (
     uniqueMentors.map(async (m) => {
       return {
         ...m._doc,
-        chatId: (await ChatRoom.findOne({ mentor: m._id }))._id,
+        chatId: (
+          await ChatRoom.findOne({ mentor: m._id, student: req.user._id })
+        )._id,
       };
     })
   );

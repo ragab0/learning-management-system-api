@@ -54,22 +54,22 @@ router
 router
   .route("/courses")
   .get(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.getEnrolledCourses
   )
   .post(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.enrollNewCourse
   )
   .put(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.archiveEnrolledCourse
   );
 // enrolled content
 router
   .route("/courses/study")
   .get(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.getBaughtCourseContent
   );
 
@@ -77,15 +77,15 @@ router
 router
   .route("/courses/archived")
   .get(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.getArchivedCourses
   )
   .post(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.archiveEnrolledCourse
   )
   .put(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.unArchiveCourse
   );
 
@@ -93,15 +93,15 @@ router
 router
   .route("/courses/cart")
   .get(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.getCartCourses
   )
   .post(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.addCartCourse
   )
   .put(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.removeCartCourse
   );
 
@@ -109,15 +109,15 @@ router
 router
   .route("/courses/wishlist")
   .get(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.getWishlistCourses
   )
   .post(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.addWishlistCourse
   )
   .put(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.removeWishlistCourse
   );
 
@@ -125,23 +125,20 @@ router
 router
   .route("/courses/:courseId")
   .get(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.getBaughtCourseContent
   );
 router
   .route("/courses/:courseId/progress")
   .post(
-    authControllers.assignableTo("student", "admin"),
+    authControllers.assignableTo("student"),
     studentControllers.updateBaughtCourseProgress
   );
 
 // checkout card courses
 router
   .route("/cart/checkout")
-  .post(
-    authControllers.assignableTo("student", "admin"),
-    studentControllers.checkout
-  );
+  .post(authControllers.assignableTo("student"), studentControllers.checkout);
 
 /**
  * 03) routing the student teachers routes

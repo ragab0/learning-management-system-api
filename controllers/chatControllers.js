@@ -4,7 +4,10 @@ const { sendResults, sendResult } = require("./handlers/send");
 const ChatRoom = require("../models/chatRoomModel");
 const Message = require("../models/messageModel");
 
-const getAllChatsOfCurrentUser = catchAsyncMiddle(async function (req, res) {
+const getAllActiveChatsOfCurrentUser = catchAsyncMiddle(async function (
+  req,
+  res
+) {
   const chats = await ChatRoom.find({
     [req.user.role || "student"]: req.user._id,
     isActive: true,
@@ -24,7 +27,7 @@ const getChatMessages = catchAsyncMiddle(async function (req, res, next) {
 
   // validate the current user is part of the target room;
   if (!chat[req.user.role]._id.equals(req.user._id)) {
-    return next(new AppError("You're not part of that chat", 403));
+    return next(new AppError("You're not part of that chat", chat, 403));
   }
 
   const msgs = await Message.find({
@@ -35,6 +38,6 @@ const getChatMessages = catchAsyncMiddle(async function (req, res, next) {
 });
 
 module.exports = {
-  getAllChatsOfCurrentUser,
+  getAllActiveChatsOfCurrentUser,
   getChatMessages,
 };

@@ -51,25 +51,32 @@ io.on("connection", function (socket) {
   console.log(`SocketServer: the user ${socket.id} connected...`);
 
   socket.on("joinRoom", ({ roomId }) => {
-    console.log("joined:", roomId);
+    console.log("joined room:", roomId);
     socket.rooms.clear();
     socket.join(roomId);
   });
   socket.on("joinLopyOfRooms", ({ roomIds }) => {
+    console.log("joined loopy:", roomIds);
     socket.rooms.clear();
     socket.join(roomIds);
   });
   socket.on("newMessage", (msgData) =>
     handleNewMessageEvent(socket, msgData, io)
   );
-  socket.on("userStartTyping", (data) => {
-    socket.to(data.roomId).emit("userStartTyping", data);
+  socket.on("userStartTyping", ({ roomId }) => {
+    socket.to(roomId).emit("userStartTyping");
   });
-  socket.on("userStopedTyping", (data) => {
-    socket.to(data.roomId).emit("userStopedTyping", data);
+  socket.on("userStopedTyping", ({ roomId }) => {
+    socket.to(roomId).emit("userStopedTyping");
   });
   socket.on("error", (error) => {
     console.error("Socket error:", error.message);
+  });
+
+  socket.on("disconnecting", () => {
+    // Log rooms before the socket is fully disconnected
+    console.log(`${socket.id} is leaving rooms:`, socket.rooms);
+    socket.broadcast.emit("userStopedTyping");
   });
 });
 
