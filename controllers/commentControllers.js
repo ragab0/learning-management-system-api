@@ -2,7 +2,7 @@ const AppError = require("../utils/appError");
 const Comment = require("../models/commentModel");
 const catchAsyncMiddle = require("../utils/catchAsyncMiddle");
 const { sendResults, sendResult } = require("./handlers/send");
-const { structureComments } = require("../utils/structureComments");
+const structureComments = require("../utils/structureComments");
 
 const getAllCommentsOfCourse = catchAsyncMiddle(async function (
   req,
@@ -15,6 +15,7 @@ const getAllCommentsOfLesson = catchAsyncMiddle(async function (
   next
 ) {
   const comments = await Comment.getCommentsPopulated(req.params.lessonId);
+
   const [structuredComments, count, deletedNestedComments] =
     structureComments(comments);
 

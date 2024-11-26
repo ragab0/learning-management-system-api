@@ -2,39 +2,24 @@ const app = require("./app");
 const dotenv = require("dotenv");
 const connectDatabase = require("./configs/database");
 const http = require("http");
-const { verify } = require("jsonwebtoken");
 const {
   protectSocket,
   handleNewMessageEvent,
 } = require("./controllers/socketControllers");
 const IoSocketServer = require("socket.io").Server;
 
+/** setting up our env configs */
 dotenv.config({ path: "./env" });
-const { PORT = 3500, NODE_PLATFORM, CHAT_PORT } = process.env;
+const { PORT = 3500, NODE_PLATFORM } = process.env;
 
 /** connect to the db */
 connectDatabase();
 
-/**
- * configuring && running our app:
- *
- */
+/** setting up the main server */
+const server = http.createServer(app);
 
-const appServer = app.listen(
-  PORT,
-  NODE_PLATFORM === "localhost" ? "localhost" : "",
-  function () {
-    console.log("Server is running on", PORT);
-  }
-);
-
-/**
- * configuring && running our chat app on our express app - main server - as a partial app;
- *
- */
-
-const communicationServer = http.createServer(appServer);
-const io = new IoSocketServer(communicationServer, {
+/** setting up the chat server upon the main server */
+const io = new IoSocketServer(server, {
   cors: {
     origin: [
       "http://localhost:3000", // dev !!!!!!!!!!!!
@@ -80,6 +65,6 @@ io.on("connection", function (socket) {
   });
 });
 
-communicationServer.listen(CHAT_PORT, () => {
-  console.log("communicationServer is running and listening on:", CHAT_PORT);
+server.listen(PORT, () => {
+  console.log("server is running and listening on:", PORT);
 });
